@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import type { Recipe } from "./Dashboard";
 import foodImage from "../assets/food3.png";
+import CommentCard from "../components/cards/CommentCard";
+
 import {
   faClock,
   faSignal,
@@ -18,10 +20,26 @@ interface UserData {
   lname: string;
 }
 
+export interface Comment {
+  comment: string;
+  createdAt: string;
+  hasChildren: boolean;
+  parentCommentId: string | null;
+  recipeId: string;
+  updatedAt: string;
+  userId: string;
+  _id: string;
+  user: {
+    fname: string;
+    lname: string;
+  };
+}
+
 export default function RecipeDetails() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [user, setUser] = useState<UserData | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
 
   useEffect(() => {
     async function fetchRecipe() {
@@ -48,6 +66,29 @@ export default function RecipeDetails() {
     }
     fetchUser();
   }, [recipe]);
+
+  useEffect(() => {
+    async function fetchComments() {
+      try {
+        const res = await API.get(`/comments/${id}`);
+        const commentData = await Promise.all(
+          res.data.comments.map(async (comment: Comment) => {
+            console.log("comment: ", comment);
+            const userRes = await API.get(`/users/${comment.userId}`);
+            return {
+              ...comment,
+              user: userRes.data.user,
+            };
+          }),
+        );
+        setComments(commentData);
+      } catch (err) {
+        console.error("Error fetching comments:", err);
+      }
+    }
+
+    if (id) fetchComments();
+  }, [id]);
 
   if (!recipe)
     return <div className="text-center p-10 text-xl">Loading...</div>;
@@ -189,6 +230,28 @@ export default function RecipeDetails() {
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-[var(--primary)] mb-4">
+              Comments
+            </h2>
+            <div className="space-y-4">
+              {comments.length === 0 ? (
+                <p className="text-[var(--muted)]">No comments yet.</p>
+              ) : (
+                comments.map((c, _i) => (
+                  <CommentCard
+                    recipeId={recipe._id}
+                    key={c._id}
+                    commentId={c._id}
+                    comment={c.comment}
+                    commentUser={c.user}
+                    createdAt={c.createdAt}
+                    hasChildren={c.hasChildren}
+                  />
+                ))
+              )}
             </div>
           </div>
         </div>
