@@ -30,6 +30,7 @@ interface Reply {
     fname: string;
     lname: string;
   };
+  hasChildren: boolean;
 }
 
 export default function CommentCard({
@@ -109,15 +110,7 @@ export default function CommentCard({
       </div>
       <p className="text-sm text-[var(--text)]">{comment}</p>
 
-      <div className="flex items-center gap-4 mt-2">
-        <button
-          className="text-[var(--accent)] text-sm font-semibold hover:underline flex items-center gap-1"
-          onClick={() => setShowReplyInput(!showReplyInput)}
-        >
-          <FontAwesomeIcon icon={faReply} />
-          Reply
-        </button>
-
+      <div className="flex justify-between items-center mt-2">
         {hasChildren && (
           <button
             className="text-[var(--primary)] text-sm font-semibold hover:underline flex items-center gap-1"
@@ -127,6 +120,14 @@ export default function CommentCard({
             {showReplies ? "Hide Replies" : "Show Replies"}
           </button>
         )}
+
+        <button
+          className="text-[var(--accent)] text-sm font-semibold hover:underline flex items-center gap-1"
+          onClick={() => setShowReplyInput(!showReplyInput)}
+        >
+          <FontAwesomeIcon icon={faReply} />
+          Reply
+        </button>
       </div>
 
       {showReplyInput && user && (
@@ -149,7 +150,7 @@ export default function CommentCard({
 
       {showReplies && replies.length > 0 && (
         <div className="ml-4 mt-4 space-y-3 border-l-2 border-[var(--highlight)] pl-4">
-          {replies.map((reply) => (
+          {/* {replies.map((reply) => (
             <div
               key={reply._id}
               className="bg-[var(--background)] p-3 rounded-lg shadow-sm"
@@ -171,6 +172,17 @@ export default function CommentCard({
               </div>
               <p className="text-sm text-[var(--text)]">{reply.comment}</p>
             </div>
+          ))} */}
+          {replies.map((reply) => (
+            <CommentCard
+              key={reply._id}
+              comment={reply.comment}
+              recipeId={recipeId}
+              commentUser={reply.user}
+              createdAt={reply.createdAt}
+              commentId={reply._id}
+              hasChildren={reply.hasChildren}
+            />
           ))}
         </div>
       )}
