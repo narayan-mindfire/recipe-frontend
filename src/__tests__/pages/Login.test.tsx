@@ -22,7 +22,7 @@ const renderWithContext = (login = vi.fn()) => {
   return render(
     <AuthContext.Provider
       value={{
-        user: null,
+        currentUser: null,
         accessToken: null,
         login,
         logout: vi.fn(),

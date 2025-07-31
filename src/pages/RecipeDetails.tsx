@@ -14,6 +14,7 @@ import {
   faThumbsUp,
   faClipboardList,
 } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../hooks/useAuth";
 
 interface UserData {
   fname: string;
@@ -40,6 +41,9 @@ export default function RecipeDetails() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [user, setUser] = useState<UserData | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
+  const { currentUser } = useAuth();
+  const [commentText, setCommentText] = useState("");
+  const [hasCommented, setHasCommented] = useState(false);
 
   useEffect(() => {
     async function fetchRecipe() {
@@ -73,7 +77,6 @@ export default function RecipeDetails() {
         const res = await API.get(`/comments/${id}`);
         const commentData = await Promise.all(
           res.data.comments.map(async (comment: Comment) => {
-            console.log("comment: ", comment);
             const userRes = await API.get(`/users/${comment.userId}`);
             return {
               ...comment,
@@ -82,13 +85,20 @@ export default function RecipeDetails() {
           }),
         );
         setComments(commentData);
+
+        if (currentUser) {
+          const alreadyCommented = commentData.some(
+            (c) => c.userId === currentUser._id && c.parentCommentId === null,
+          );
+          setHasCommented(alreadyCommented);
+        }
       } catch (err) {
         console.error("Error fetching comments:", err);
       }
     }
 
-    if (id) fetchComments();
-  }, [id]);
+    if (id && currentUser) fetchComments();
+  }, [id, currentUser]);
 
   if (!recipe)
     return <div className="text-center p-10 text-xl">Loading...</div>;
@@ -236,6 +246,56 @@ export default function RecipeDetails() {
             <h2 className="text-2xl font-bold text-[var(--primary)] mb-4">
               Comments
             </h2>
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-2 text-[var(--text)]">
+                {hasCommented
+                  ? "You’ve already commented on this recipe."
+                  : "Leave a Comment"}
+              </h3>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <textarea
+                  className="w-full p-3 rounded-md border border-gray-300 text-sm text-[var(--text)] bg-[var(--background)] resize-none"
+                  rows={3}
+                  placeholder="Write your comment..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  disabled={hasCommented}
+                />
+                <button
+                  className="bg-[var(--accent)] text-white px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={async () => {
+                    try {
+                      await API.post("/comments", {
+                        recipeId: recipe._id,
+                        comment: commentText,
+                      });
+                      setCommentText("");
+                      setHasCommented(true);
+                      // Optionally re-fetch comments
+                      const res = await API.get(`/comments/${id}`);
+                      const commentData = await Promise.all(
+                        res.data.comments.map(async (comment: Comment) => {
+                          const userRes = await API.get(
+                            `/users/${comment.userId}`,
+                          );
+                          return {
+                            ...comment,
+                            user: userRes.data.user,
+                          };
+                        }),
+                      );
+                      setComments(commentData);
+                    } catch (err) {
+                      console.error("Error submitting comment", err);
+                    }
+                  }}
+                  disabled={hasCommented || !commentText.trim()}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+
             <div className="space-y-4">
               {comments.length === 0 ? (
                 <p className="text-[var(--muted)]">No comments yet.</p>

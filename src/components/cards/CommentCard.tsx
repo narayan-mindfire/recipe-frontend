@@ -46,7 +46,7 @@ export default function CommentCard({
     timeStyle: "short",
   });
 
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [replies, setReplies] = useState<Reply[]>([]);
@@ -130,7 +130,7 @@ export default function CommentCard({
         </button>
       </div>
 
-      {showReplyInput && user && (
+      {showReplyInput && currentUser && (
         <div className="mt-2 flex gap-2 items-center">
           <input
             className="w-full p-2 rounded-md border bg-[var(--highlight)] border-gray-300 text-sm text-[var(--text)]"

@@ -4,7 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 const Navbar = () => {
   const { darkMode, toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { currentUser, logout } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -20,7 +20,7 @@ const Navbar = () => {
       </Link>
 
       <div className="flex items-center gap-4">
-        {!user ? (
+        {!currentUser ? (
           <>
             <Link
               to="/login"
@@ -44,9 +44,9 @@ const Navbar = () => {
               <div className="text-sm font-medium flex items-center gap-2">
                 <i
                   className="fas fa-user-circle text-xl"
-                  title={`${user.fname} ${user.lname}`}
+                  title={`${currentUser.fname} ${currentUser.lname}`}
                 ></i>
-                <span>{user.fname}</span>
+                <span>{currentUser.fname}</span>
               </div>
             </Link>
             <button

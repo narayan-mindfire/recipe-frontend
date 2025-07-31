@@ -19,13 +19,13 @@ vi.mock("../../hooks/useTheme", () => ({
   }),
 }));
 
-const renderWithAuth = (user: User | null = null) => {
+const renderWithAuth = (currentUser: User | null = null) => {
   const login = vi.fn();
   const logout = vi.fn();
 
   render(
     <AuthContext.Provider
-      value={{ user, accessToken: "fake-token", login, logout }}
+      value={{ currentUser, accessToken: "fake-token", login, logout }}
     >
       <BrowserRouter>
         <Navbar />
@@ -76,7 +76,7 @@ describe("Navbar component", () => {
     render(
       <AuthContext.Provider
         value={{
-          user: mockUser,
+          currentUser: mockUser,
           accessToken: "fake-token",
           login: vi.fn(),
           logout,
