@@ -5,6 +5,8 @@ import { Footer } from "./components/utils/Footer";
 import Navbar from "./components/utils/Navbar";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import RecipeDetails from "./pages/RecipeDetails";
 function App() {
   return (
     <div className="transition-colors duration-300">
@@ -15,6 +17,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/settings" element={<Setting />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/recipes/:id" element={<RecipeDetails />} />
         </Routes>
         <Footer />
       </Router>

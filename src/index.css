@@ -5,8 +5,8 @@
   --background-dark: #1e1e1e;
   --background2: #c2c0c0;
   --text: #444545;
-  --accent: #05ac7a;
-  --highlight: #fff388;
+  --accent: #38c700;
+  --highlight: #fff7ad;
   --primary: #f24333;
   --muted: #999899;
 }
@@ -16,7 +16,7 @@
   --text: #f8fafc;
   --background2: #7e7e7e;
   --accent: #02be50;
-  --highlight: #c4b64b;
-  --primary: #ff6659;
+  --highlight: #463d00;
+  --primary: #ff3c00;
   --muted: #777777;
 }

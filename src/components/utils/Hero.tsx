@@ -18,7 +18,9 @@ export const HeroSection = () => (
       meals with food lovers around the world.
     </p>
     <div className="flex gap-4 flex-wrap justify-center z-10">
-      <Button variant="outline">Get Started</Button>
+      <Button to="/dashboard" variant="outline">
+        Get Started
+      </Button>
     </div>
 
     <img
