@@ -37,12 +37,12 @@ describe("RecipeCard Component", () => {
     render(
       <BrowserRouter>
         <RecipeCard recipe={mockRecipe} />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText("Paneer Butter Masala")).toBeInTheDocument();
     expect(
-      screen.getByText("Rich and creamy North Indian delight.")
+      screen.getByText("Rich and creamy North Indian delight."),
     ).toBeInTheDocument();
 
     const button = screen.getByRole("link", { name: /view full recipe/i });
@@ -61,7 +61,7 @@ describe("RecipeCard Component", () => {
     render(
       <BrowserRouter>
         <RecipeCard recipe={mockRecipe} />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText(/loading/i)).toBeInTheDocument();

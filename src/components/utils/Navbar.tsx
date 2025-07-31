@@ -37,16 +37,21 @@ const Navbar = () => {
           </>
         ) : (
           <>
-            <div className="text-sm font-medium flex items-center gap-2">
-              <i
-                className="fas fa-user-circle text-xl"
-                title={`${user.fname} ${user.lname}`}
-              ></i>
-              <span>{user.fname}</span>
-            </div>
+            <Link
+              to="/me"
+              className="hover:text-[var(--primary)] transition-colors duration-200"
+            >
+              <div className="text-sm font-medium flex items-center gap-2">
+                <i
+                  className="fas fa-user-circle text-xl"
+                  title={`${user.fname} ${user.lname}`}
+                ></i>
+                <span>{user.fname}</span>
+              </div>
+            </Link>
             <button
               onClick={handleLogout}
-              className="text-sm font-medium hover:text-[var(--primary)] transition-colors"
+              className="text-sm font-medium hover:text-[var(--primary)] transition-colors duration-200"
             >
               Logout
             </button>
@@ -54,7 +59,7 @@ const Navbar = () => {
         )}
         <button
           onClick={toggleTheme}
-          className="text-lg hover:text-[var(--primary)] transition-colors"
+          className="text-lg hover:text-[var(--primary)] transition-colors duration-200"
           aria-label="Toggle Theme"
         >
           <i className={`fas ${darkMode ? "fa-sun" : "fa-moon"}`}></i>

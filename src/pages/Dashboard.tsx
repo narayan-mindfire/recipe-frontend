@@ -36,10 +36,18 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6 bg-[var(--background)] min-h-screen">
-      {recipes.map((recipe) => (
-        <RecipeCard key={recipe._id} recipe={recipe} />
-      ))}
+    <div className="min-h-screen bg-[var(--background2)] py-12 px-4">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-2xl font-bold mb-8 text-center text-[var(--primary)]">
+          <span className="text-[var(--accent)]">Your</span> Recipes
+        </h2>
+
+        <div className="flex flex-wrap justify-center gap-8">
+          {recipes.map((recipe) => (
+            <RecipeCard key={recipe._id} recipe={recipe} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

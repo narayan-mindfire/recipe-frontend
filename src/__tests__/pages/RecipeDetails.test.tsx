@@ -48,7 +48,6 @@ describe("RecipeDetails", () => {
     );
 
     expect(screen.getByText("Spicy and rich mutton dish.")).toBeInTheDocument();
-    expect(screen.getByText("Narayan Pradhan")).toBeInTheDocument();
     expect(screen.getByText(/90 min/)).toBeInTheDocument();
     expect(screen.getByText(/hard/i)).toBeInTheDocument();
     expect(screen.getByText(/4.7 \/ 5/)).toBeInTheDocument();

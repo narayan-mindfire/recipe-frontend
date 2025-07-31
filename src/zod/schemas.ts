@@ -20,3 +20,10 @@ export const signupSchema = z
     path: ["confirmPassword"],
     message: "Passwords do not match",
   });
+
+export const editProfileSchema = z.object({
+  fname: z.string().min(2, "First name must be at least 2 characters"),
+  lname: z.string().min(2, "Last name must be at least 2 characters"),
+  email: z.string().email("Enter a valid email"),
+  bio: z.string().max(300, "Bio should be under 300 characters").optional(),
+});

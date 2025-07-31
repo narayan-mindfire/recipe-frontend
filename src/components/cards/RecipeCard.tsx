@@ -47,7 +47,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
       <img
         src={foodImage}
         alt={recipe.title}
-        className="w-full object-cover bg-[var(--background2)]"
+        className="w-full h-[60%] object-cover bg-[var(--background2)]"
       />
 
       <div className="p-5 flex flex-col gap-4">
@@ -62,7 +62,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
           </div>
         </div>
 
-        <div className="space-y-1 pb-50">
+        <div className="space-y-1">
           <h2 className="text-xl font-bold text-[var(--primary)]">
             {recipe.title}
           </h2>
@@ -72,7 +72,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
           </p>
           <Button
             variant="default"
-            to={`recipes/${recipe._id}`}
+            to={`/recipes/${recipe._id}`}
             className="w-full"
           >
             view full recipe
