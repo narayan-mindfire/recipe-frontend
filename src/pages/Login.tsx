@@ -23,8 +23,7 @@ const Login = () => {
     try {
       const res = await API.post("/auth/login", data);
       login(res.data.user, res.data.accessToken);
-      alert("Login successful. Redirecting to dashboard...");
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
       alert(error.response?.data?.message || "Registration failed");

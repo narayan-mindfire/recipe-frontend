@@ -88,9 +88,6 @@ test("submits register form and redirects on success", async () => {
     });
 
     expect(mockLogin).toHaveBeenCalledWith(mockUser, "fake-token");
-    expect(window.alert).toHaveBeenCalledWith(
-      "Registered successfully. Redirecting to dashboard..",
-    );
-    expect(window.location.href).toBe("/");
+    expect(window.location.href).toBe("/dashboard");
   });
 });

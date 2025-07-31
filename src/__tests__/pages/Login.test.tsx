@@ -68,9 +68,6 @@ test("submits login form and redirects on success", async () => {
     });
 
     expect(mockLogin).toHaveBeenCalledWith(mockUser, "fake-token");
-    expect(window.alert).toHaveBeenCalledWith(
-      "Login successful. Redirecting to dashboard...",
-    );
-    expect(window.location.href).toBe("/");
+    expect(window.location.href).toBe("/dashboard");
   });
 });
