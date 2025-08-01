@@ -8,12 +8,12 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return (
-    <nav className="w-full px-6 py-4 flex justify-between items-center bg-[var(--background)] text-[var(--text)] shadow-md">
-      <Link to={"/"}>
+    <nav className="w-full z-10 px-6 py-4 flex justify-between items-center bg-[var(--background)] text-[var(--text)] shadow-2xl">
+      <Link to={currentUser ? "/dashboard" : "/"}>
         <div className="text-xl font-bold flex items-center gap-2">
           🍛 <span>Eatos</span>
         </div>

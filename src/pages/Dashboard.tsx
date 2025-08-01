@@ -36,7 +36,7 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[var(--background2)] py-12 px-4">
+    <div className="min-h-[85vh] bg-[var(--background2)] py-12 px-4">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-bold mb-8 text-center text-[var(--primary)]">
           <span className="text-[var(--accent)]">Your</span> Recipes

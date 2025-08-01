@@ -166,6 +166,19 @@ const ProfilePage = () => {
           </div>
         </motion.div>
       )}
+      {recipes.length === 0 && (
+        <motion.div
+          className="mt-10 w-full"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-2xl font-bold mb-6 text-center )]">
+            You still haven't authored a recipe, share you're favourites right{" "}
+            <span className="text-[var(--primary)]">now</span>!
+          </h2>
+        </motion.div>
+      )}
     </div>
   );
 };

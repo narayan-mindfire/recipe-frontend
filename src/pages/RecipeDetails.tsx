@@ -14,6 +14,7 @@ import {
   faThumbsUp,
   faClipboardList,
 } from "@fortawesome/free-solid-svg-icons";
+import { faStar as blankStar } from "@fortawesome/free-regular-svg-icons";
 import { useAuth } from "../hooks/useAuth";
 
 interface UserData {
@@ -44,6 +45,10 @@ export default function RecipeDetails() {
   const { currentUser } = useAuth();
   const [commentText, setCommentText] = useState("");
   const [hasCommented, setHasCommented] = useState(false);
+  const [myRating, setMyRating] = useState<number | null>(null);
+  const [ratingId, setRatingId] = useState<string | null>(null);
+  const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+  const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
     async function fetchRecipe() {
@@ -99,6 +104,44 @@ export default function RecipeDetails() {
 
     if (id && currentUser) fetchComments();
   }, [id, currentUser]);
+
+  useEffect(() => {
+    async function fetchMyRating() {
+      console.log("fetching ratings");
+      try {
+        console.log("trying to get it");
+        const res = await API.get(`/ratings/${id}`);
+        console.log("rating: ", res);
+        setMyRating(res.data.myRating.rating);
+        setRatingId(res.data.myRating._id);
+      } catch (_err) {
+        console.error("Failed to fetch my rating");
+      }
+    }
+    console.log("currentUser");
+    if (currentUser) {
+      fetchMyRating();
+    }
+  }, [currentUser, id]);
+
+  const handleRatingClick = async (star: number) => {
+    if (!currentUser || !id || (myRating && !editMode)) return;
+    try {
+      if (myRating && editMode) {
+        await API.put(`/ratings/${ratingId}`, { rating: star });
+      } else {
+        const res = await API.post("/ratings", {
+          recipeId: id,
+          rating: star,
+        });
+        setRatingId(res.data.rating._id);
+      }
+      setMyRating(star);
+      setEditMode(false);
+    } catch (err) {
+      console.error("Rating failed", err);
+    }
+  };
 
   if (!recipe)
     return <div className="text-center p-10 text-xl">Loading...</div>;
@@ -242,6 +285,39 @@ export default function RecipeDetails() {
               ))}
             </div>
           </div>
+          <div className="mt-6 p-4 bg-[var(--background)] rounded-xl shadow-sm">
+            <h2 className="text-lg font-bold mb-2 text-[var(--primary)]">
+              {myRating ? "Your Rating" : "Rate this recipe"}
+            </h2>
+
+            <div className="flex items-center space-x-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FontAwesomeIcon
+                  key={star}
+                  icon={
+                    (hoveredStar ?? myRating ?? 0) >= star ? faStar : blankStar
+                  }
+                  className="text-yellow-400 text-2xl cursor-pointer"
+                  onMouseEnter={() =>
+                    (!myRating || editMode) ?? setHoveredStar(star)
+                  }
+                  onMouseLeave={() =>
+                    (!myRating || editMode) ?? setHoveredStar(null)
+                  }
+                  onClick={() => handleRatingClick(star)}
+                />
+              ))}
+              {myRating && !editMode && (
+                <button
+                  className="ml-4 px-3 py-1 rounded-md bg-[var(--accent)] text-white text-sm"
+                  onClick={() => setEditMode(true)}
+                >
+                  Edit Rating
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="mt-12">
             <h2 className="text-2xl font-bold text-[var(--primary)] mb-4">
               Comments

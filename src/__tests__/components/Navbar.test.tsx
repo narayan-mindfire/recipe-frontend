@@ -91,7 +91,7 @@ describe("Navbar component", () => {
     await userEvent.click(screen.getByText(/logout/i));
 
     expect(logout).toHaveBeenCalled();
-    expect(window.location.href).toBe("/login");
+    expect(window.location.href).toBe("/");
     window.location.href = originalHref;
   });
 });
