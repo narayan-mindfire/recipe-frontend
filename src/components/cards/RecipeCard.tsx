@@ -6,6 +6,11 @@ import API from "../../service/axiosInterceptor";
 import foodImage from "../../assets/food3.png";
 import Button from "../utils/Button";
 import type { Recipe } from "../../pages/Dashboard";
+import {
+  faStar as filledStar,
+  faStarHalfAlt,
+} from "@fortawesome/free-solid-svg-icons";
+import { faStar as blankStar } from "@fortawesome/free-regular-svg-icons";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -18,7 +23,7 @@ interface UserData {
 
 export default function RecipeCard({ recipe }: RecipeCardProps) {
   const [user, setUser] = useState<UserData | null>(null);
-
+  console.log(recipe.averageRating);
   useEffect(() => {
     async function fetchUser() {
       try {
@@ -66,6 +71,33 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
           <h2 className="text-xl font-bold text-[var(--primary)]">
             {recipe.title}
           </h2>
+          <div
+            aria-label="rating"
+            title={`rating: ${recipe.averageRating}`}
+            className="flex items-center gap-1 text-sm text-yellow-400"
+          >
+            {Array.from({ length: 5 }, (_, i) => {
+              const fullStars = Math.floor(recipe.averageRating);
+              const isHalf = recipe.averageRating - fullStars >= 0.5;
+
+              let icon;
+              if (i < fullStars) {
+                icon = filledStar;
+              } else if (i === fullStars && isHalf) {
+                icon = faStarHalfAlt;
+              } else {
+                icon = blankStar;
+              }
+
+              return (
+                <FontAwesomeIcon key={i} icon={icon} className="text-base" />
+              );
+            })}
+            <span className="text-[var(--muted)] ml-2 text-xs">
+              ({recipe.numberOfRatings})
+            </span>
+          </div>
+
           <p className="text-xs text-[var(--accent)]">{formattedDate}</p>
           <p className="text-sm text-[var(--accent)] leading-snug truncate w-full">
             {recipe.description}

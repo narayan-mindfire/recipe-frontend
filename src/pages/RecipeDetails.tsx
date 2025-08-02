@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import API from "../service/axiosInterceptor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
@@ -102,7 +102,7 @@ export default function RecipeDetails() {
       }
     }
 
-    if (id && currentUser) fetchComments();
+    fetchComments();
   }, [id, currentUser]);
 
   useEffect(() => {
@@ -181,7 +181,7 @@ export default function RecipeDetails() {
           </div>
         </div>
 
-        <div className="bg-[var(--highlight)] p-6 rounded-xl shadow-md space-y-4">
+        <div className="bg-[var(--background2)] p-6 rounded-xl shadow-md space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex items-center gap-3 p-4 bg-[var(--background)] rounded-xl shadow-sm">
               <FontAwesomeIcon
@@ -285,9 +285,26 @@ export default function RecipeDetails() {
               ))}
             </div>
           </div>
-          <div className="mt-6 p-4 bg-[var(--background)] rounded-xl shadow-sm">
+          <div className="mt-6 p-4 ">
             <h2 className="text-lg font-bold mb-2 text-[var(--primary)]">
-              {myRating ? "Your Rating" : "Rate this recipe"}
+              {currentUser ? (
+                myRating ? (
+                  "Your Rating"
+                ) : (
+                  "Rate this recipe"
+                )
+              ) : (
+                <p className="text-black">
+                  Please{" "}
+                  <Link
+                    to={"/login"}
+                    className="text-[var(--primary)] hover:underline"
+                  >
+                    login
+                  </Link>{" "}
+                  to rate this recipe
+                </p>
+              )}
             </h2>
 
             <div className="flex items-center space-x-2">
@@ -322,59 +339,75 @@ export default function RecipeDetails() {
             <h2 className="text-2xl font-bold text-[var(--primary)] mb-4">
               Comments
             </h2>
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-2 text-[var(--text)]">
-                {hasCommented
-                  ? "You’ve already commented on this recipe."
-                  : "Leave a Comment"}
-              </h3>
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <textarea
-                  className="w-full p-3 rounded-md border border-gray-300 text-sm text-[var(--text)] bg-[var(--background)] resize-none"
-                  rows={3}
-                  placeholder="Write your comment..."
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                  disabled={hasCommented}
-                />
-                <button
-                  className="bg-[var(--accent)] text-white px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={async () => {
-                    try {
-                      await API.post("/comments", {
-                        recipeId: recipe._id,
-                        comment: commentText,
-                      });
-                      setCommentText("");
-                      setHasCommented(true);
-                      // Optionally re-fetch comments
-                      const res = await API.get(`/comments/${id}`);
-                      const commentData = await Promise.all(
-                        res.data.comments.map(async (comment: Comment) => {
-                          const userRes = await API.get(
-                            `/users/${comment.userId}`,
-                          );
-                          return {
-                            ...comment,
-                            user: userRes.data.user,
-                          };
-                        }),
-                      );
-                      setComments(commentData);
-                    } catch (err) {
-                      console.error("Error submitting comment", err);
-                    }
-                  }}
-                  disabled={hasCommented || !commentText.trim()}
-                >
-                  Submit
-                </button>
+
+            {currentUser && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-2 text-[var(--text)]">
+                  {hasCommented
+                    ? "You’ve already commented on this recipe."
+                    : "Leave a Comment"}
+                </h3>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <textarea
+                    className="w-full p-3 rounded-md border border-gray-300 text-sm text-[var(--text)] bg-[var(--background)] resize-none"
+                    rows={3}
+                    placeholder="Write your comment..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    disabled={hasCommented}
+                  />
+                  <button
+                    className="bg-[var(--accent)] text-white px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={async () => {
+                      try {
+                        await API.post("/comments", {
+                          recipeId: recipe._id,
+                          comment: commentText,
+                        });
+                        setCommentText("");
+                        setHasCommented(true);
+                        const res = await API.get(`/comments/${id}`);
+                        const commentData = await Promise.all(
+                          res.data.comments.map(async (comment: Comment) => {
+                            const userRes = await API.get(
+                              `/users/${comment.userId}`,
+                            );
+                            return {
+                              ...comment,
+                              user: userRes.data.user,
+                            };
+                          }),
+                        );
+                        setComments(commentData);
+                      } catch (err) {
+                        console.error("Error submitting comment", err);
+                      }
+                    }}
+                    disabled={hasCommented || !commentText.trim()}
+                  >
+                    Submit
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
+            {!currentUser && (
+              <h3 className="text-lg font-semibold mb-2 text-[var(--text)]">
+                Please{" "}
+                <Link
+                  to={"/login"}
+                  className="text-[var(--primary)] hover:underline"
+                >
+                  login
+                </Link>{" "}
+                to comment on this recipe
+              </h3>
+            )}
 
             <div className="space-y-4">
               {comments.length === 0 ? (
-                <p className="text-[var(--muted)]">No comments yet.</p>
+                <p className="text-[var(--muted)]">
+                  No comments yet. Be the first one to comment!
+                </p>
               ) : (
                 comments.map((c, _i) => (
                   <CommentCard

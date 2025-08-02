@@ -3,7 +3,7 @@
 :root {
   --background: #ffffff;
   --background-dark: #1e1e1e;
-  --background2: #c2c0c0;
+  --background2: #efefef;
   --text: #444545;
   --accent: #38c700;
   --highlight: #fff7ad;
@@ -14,7 +14,7 @@
 .dark {
   --background: var(--background-dark);
   --text: #f8fafc;
-  --background2: #7e7e7e;
+  --background2: #4b4b4b;
   --accent: #02be50;
   --highlight: #463d00;
   --primary: #ff3c00;

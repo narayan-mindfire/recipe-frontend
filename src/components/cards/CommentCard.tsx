@@ -111,15 +111,21 @@ export default function CommentCard({
       <p className="text-sm text-[var(--text)]">{comment}</p>
 
       <div className="flex justify-between items-center mt-2">
-        {hasChildren && (
-          <button
-            className="text-[var(--primary)] text-sm font-semibold hover:underline flex items-center gap-1"
-            onClick={handleToggleReplies}
-          >
-            <FontAwesomeIcon icon={showReplies ? faChevronUp : faChevronDown} />
-            {showReplies ? "Hide Replies" : "Show Replies"}
-          </button>
-        )}
+        <div className="min-w-[120px]">
+          {hasChildren ? (
+            <button
+              className="text-[var(--primary)] text-sm font-semibold hover:underline flex items-center gap-1"
+              onClick={handleToggleReplies}
+            >
+              <FontAwesomeIcon
+                icon={showReplies ? faChevronUp : faChevronDown}
+              />
+              {showReplies ? "Hide Replies" : "Show Replies"}
+            </button>
+          ) : (
+            <span className="invisible">Placeholder</span>
+          )}
+        </div>
 
         <button
           className="text-[var(--accent)] text-sm font-semibold hover:underline flex items-center gap-1"
@@ -150,29 +156,6 @@ export default function CommentCard({
 
       {showReplies && replies.length > 0 && (
         <div className="ml-4 mt-4 space-y-3 border-l-2 border-[var(--highlight)] pl-4">
-          {/* {replies.map((reply) => (
-            <div
-              key={reply._id}
-              className="bg-[var(--background)] p-3 rounded-lg shadow-sm"
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <FontAwesomeIcon
-                  icon={faUserCircle}
-                  className="text-[var(--accent)] text-sm"
-                />
-                <span className="text-sm font-medium text-[var(--text)]">
-                  {reply.user.fname} {reply.user.lname}
-                </span>
-                <span className="ml-auto text-xs text-[var(--muted)]">
-                  {new Date(reply.createdAt).toLocaleString("en-US", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
-                </span>
-              </div>
-              <p className="text-sm text-[var(--text)]">{reply.comment}</p>
-            </div>
-          ))} */}
           {replies.map((reply) => (
             <CommentCard
               key={reply._id}
