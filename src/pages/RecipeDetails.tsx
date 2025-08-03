@@ -107,18 +107,14 @@ export default function RecipeDetails() {
 
   useEffect(() => {
     async function fetchMyRating() {
-      console.log("fetching ratings");
       try {
-        console.log("trying to get it");
         const res = await API.get(`/ratings/${id}`);
-        console.log("rating: ", res);
         setMyRating(res.data.myRating.rating);
         setRatingId(res.data.myRating._id);
       } catch (_err) {
         console.error("Failed to fetch my rating");
       }
     }
-    console.log("currentUser");
     if (currentUser) {
       fetchMyRating();
     }
@@ -153,11 +149,15 @@ export default function RecipeDetails() {
   });
 
   return (
-    <div className="p-6 sm:p-12 bg-[var(--background)] text-[var(--text)]">
+    <div className="p-6 sm:p-12 bg-[var(--background)] text-[var(--text)] transition-colors duration-300">
       <div className="max-w-5xl mx-auto gap-8">
         <div>
           <img
-            src={foodImage}
+            src={
+              recipe.recipeImage
+                ? `http://localhost:5000/uploads/${recipe.recipeImage}`
+                : foodImage
+            }
             alt={recipe.title}
             className="rounded-xl w-full h-[300px] sm:h-[400px] object-cover shadow-lg"
           />

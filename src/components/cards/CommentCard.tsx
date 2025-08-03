@@ -55,7 +55,6 @@ export default function CommentCard({
   const handleFetchReplies = async () => {
     try {
       const res = await API.get(`/comments/${commentId}/replies`);
-      console.log(res);
       const populatedReplies = await Promise.all(
         res.data.commentChildren.map(async (reply: Reply) => {
           const userRes = await API.get(`/users/${reply.userId}`);

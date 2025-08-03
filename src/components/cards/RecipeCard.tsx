@@ -6,6 +6,8 @@ import API from "../../service/axiosInterceptor";
 import foodImage from "../../assets/food3.png";
 import Button from "../utils/Button";
 import type { Recipe } from "../../pages/Dashboard";
+import { useAuth } from "../../hooks/useAuth";
+
 import {
   faStar as filledStar,
   faStarHalfAlt,
@@ -23,7 +25,10 @@ interface UserData {
 
 export default function RecipeCard({ recipe }: RecipeCardProps) {
   const [user, setUser] = useState<UserData | null>(null);
-  console.log(recipe.averageRating);
+  const [showMenu, setShowMenu] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  const { currentUser } = useAuth();
   useEffect(() => {
     async function fetchUser() {
       try {
@@ -36,23 +41,61 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
     fetchUser();
   }, [recipe.userId]);
 
+  const handleDelete = async () => {
+    if (!recipe._id) return;
+    try {
+      await API.delete(`/recipes/${recipe._id}`);
+      setIsDeleted(true);
+    } catch (error) {
+      console.error("Failed to delete recipe", error);
+      alert("Failed to delete recipe");
+    }
+  };
+
   const formattedDate = new Date(recipe.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-
+  if (isDeleted) {
+    return null;
+  }
   return (
     <motion.div
-      className="w-full sm:w-[300px] h-[500px] bg-[var(--highlight)] rounded-2xl shadow-lg text-[var(--text)] overflow-hidden flex flex-col transition-all hover:shadow-xl"
+      className="relative w-full sm:w-[300px] h-[500px] bg-[var(--highlight)] rounded-2xl shadow-lg text-[var(--text)] overflow-hidden flex flex-col transition-all hover:shadow-xl"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
+      {currentUser?._id === recipe.userId && (
+        <div className="absolute top-2 right-2">
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="text-xl font-bold text-[var(--accent)] hover:text-[var(--primary)]"
+          >
+            ⋮
+          </button>
+          {showMenu && (
+            <div className="absolute right-0 mt-2 w-32 bg-[var(--background)] border border-gray-200 rounded shadow-lg z-10">
+              <button
+                onClick={handleDelete}
+                className="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--background2)] text-red-500"
+              >
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       <img
-        src={foodImage}
+        src={
+          recipe.recipeImage
+            ? `http://localhost:5000/uploads/${recipe.recipeImage}`
+            : foodImage
+        }
         alt={recipe.title}
-        className="w-full h-[60%] object-cover bg-[var(--background2)]"
+        className="w-full h-[300px] object-cover bg-[var(--background2)]"
       />
 
       <div className="p-5 flex flex-col gap-4">
@@ -68,7 +111,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
         </div>
 
         <div className="space-y-1">
-          <h2 className="text-xl font-bold text-[var(--primary)]">
+          <h2 className="text-xl font-bold text-[var(--primary)] truncate">
             {recipe.title}
           </h2>
           <div

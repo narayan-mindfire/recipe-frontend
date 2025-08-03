@@ -13,6 +13,7 @@ const Register = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
   });
@@ -20,10 +21,25 @@ const Register = () => {
   const { login } = useAuth();
   const onSubmit = async (data: z.infer<typeof signupSchema>) => {
     try {
-      const res = await API.post("/auth/register", data);
+      const formData = new FormData();
+
+      formData.append("fname", data.fname);
+      formData.append("lname", data.lname);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      formData.append("confirmPassword", data.confirmPassword);
+      formData.append("bio", data.bio || "");
+      if (data.profileImage instanceof File) {
+        formData.append("profileImage", data.profileImage);
+      }
+
+      const res = await API.post("/auth/register", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       login(res.data.user, res.data.accessToken);
       window.location.href = "/dashboard";
-    } catch (err: unknown) {
+    } catch (err) {
       const error = err as AxiosError<{ message: string }>;
       alert(error.response?.data?.message || "Registration failed");
     }
@@ -125,9 +141,13 @@ const Register = () => {
 
             <div>
               <input
-                {...register("profileImage")}
-                placeholder="Profile Image URL (optional)"
-                className="w-full py-3 px-4 border border-[var(--muted)] rounded-lg focus:outline-none focus:ring-2 "
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) setValue("profileImage", file);
+                }}
+                className="w-full py-3 px-4 border border-[var(--muted)] rounded-lg focus:outline-none focus:ring-2"
               />
             </div>
 

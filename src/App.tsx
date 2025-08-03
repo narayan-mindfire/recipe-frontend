@@ -8,6 +8,8 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import RecipeDetails from "./pages/RecipeDetails";
 import ProfilePage from "./pages/Profile";
+import CreateRecipeForm from "./pages/CreateRecipe";
+
 function App() {
   return (
     <div className="transition-colors duration-300">
@@ -21,6 +23,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/recipes/:id" element={<RecipeDetails />} />
           <Route path="/me" element={<ProfilePage />} />
+          <Route path="/createRecipe" element={<CreateRecipeForm />} />
         </Routes>
         <Footer />
       </Router>

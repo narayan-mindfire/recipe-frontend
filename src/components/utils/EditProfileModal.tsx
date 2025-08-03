@@ -5,6 +5,8 @@ import type { z } from "zod";
 import API from "../../service/axiosInterceptor";
 import { motion } from "framer-motion";
 import Button from "./Button";
+import { useEffect } from "react";
+
 interface EditProfileModalProps {
   defaultValues: z.infer<typeof editProfileSchema>;
   onClose: () => void;
@@ -19,15 +21,34 @@ const EditProfileModal = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<z.infer<typeof editProfileSchema>>({
     resolver: zodResolver(editProfileSchema),
     defaultValues,
   });
 
+  useEffect(() => {
+    setValue("profileImage", undefined);
+  }, [setValue]);
+
   const onSubmit = async (data: z.infer<typeof editProfileSchema>) => {
     try {
-      await API.put("/auth/me", data);
+      const formData = new FormData();
+
+      formData.append("fname", data.fname);
+      formData.append("lname", data.lname);
+      formData.append("email", data.email);
+      formData.append("bio", data.bio || "");
+
+      if (data.profileImage instanceof File) {
+        formData.append("profileImage", data.profileImage);
+      }
+
+      await API.put("/auth/me", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       onSuccess?.();
       onClose();
     } catch (_err) {
@@ -98,6 +119,16 @@ const EditProfileModal = ({
               {errors.bio.message}
             </p>
           )}
+
+          <input
+            type="file"
+            accept="image/*"
+            className="w-full"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) setValue("profileImage", file);
+            }}
+          />
 
           <Button type="submit" className="w-full">
             Save Changes

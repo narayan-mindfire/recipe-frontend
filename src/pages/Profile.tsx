@@ -31,7 +31,6 @@ const ProfilePage = () => {
 
     API.get("/recipes/me")
       .then((res) => {
-        console.log(res.data.myRecipies);
         setRecipes(res.data.myRecipies);
       })
       .catch((err) => console.error("Error fetching recipes:", err));
@@ -72,7 +71,11 @@ const ProfilePage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3">
           <div className="bg-[var(--accent)] flex flex-col items-center justify-center p-10 text-white">
             <motion.img
-              src={user.profileImage || "/default-avatar.png"}
+              src={
+                user.profileImage
+                  ? `http://localhost:5000/uploads/${user.profileImage}`
+                  : ""
+              }
               alt="Profile"
               className="w-36 h-36 rounded-full object-cover border-4 border-white shadow-md"
               whileHover={{ scale: 1.1 }}
@@ -122,7 +125,6 @@ const ProfilePage = () => {
                 <Button
                   type="button"
                   onClick={() => {
-                    console.log("edit profile");
                     setIsEditing(true);
                   }}
                   className="w-full hover:bg-amber-400"
