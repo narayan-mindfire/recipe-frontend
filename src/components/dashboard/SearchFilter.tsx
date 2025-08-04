@@ -38,27 +38,27 @@ export default function SearchFilters({ onFilterChange }: Props) {
   return (
     <div className="p-4 rounded-xl shadow flex flex-col sm:flex-row gap-4 mb-6 flex-wrap bg-[var(--background)]">
       <input
-        className="flex-1 p-2 text-[var(--text)] rounded-md border border-gray-300 text-sm"
+        className="flex-1 p-2 text-[var(--text)] rounded-md border border-[var(--text)]] text-sm"
         placeholder="Ingredients (comma-separated)"
         value={ingredients}
         onChange={(e) => setIngredients(e.target.value)}
       />
       <input
-        className="w-24 p-2 text-[var(--text)] rounded-md border border-gray-300 text-sm"
+        className="w-28 p-2 text-[var(--text)] rounded-md border border-[var(--text)]] text-sm"
         type="number"
         placeholder="Min Rating"
         value={minRating}
         onChange={(e) => setMinRating(e.target.value)}
       />
       <input
-        className="w-24 p-2 text-[var(--text)] rounded-md border border-gray-300 text-sm"
+        className="w-24 p-2 text-[var(--text)] rounded-md border border-[var(--text)]] text-sm"
         type="number"
         placeholder="Max Time"
         value={maxTime}
         onChange={(e) => setMaxTime(e.target.value)}
       />
       <select
-        className="p-2 text-[var(--text)] rounded-md border border-gray-300 text-sm"
+        className="p-2 text-[var(--text)] rounded-md border border-[var(--text)]] text-sm"
         value={sortBy}
         onChange={(e) => {
           const value = e.target.value;
