@@ -172,7 +172,7 @@ export default function RecipeDetails() {
           <img
             src={
               recipe.recipeImage
-                ? `http://localhost:5000/uploads/${recipe.recipeImage}`
+                ? `${process.env.SERVER_URL}/uploads/${recipe.recipeImage}`
                 : foodImage
             }
             alt={recipe.title}

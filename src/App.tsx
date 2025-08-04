@@ -9,6 +9,11 @@ import Dashboard from "./pages/Dashboard";
 import RecipeDetails from "./pages/RecipeDetails";
 import ProfilePage from "./pages/Profile";
 import CreateRecipeForm from "./pages/CreateRecipe";
+import NotFound from "./pages/NotFound";
+import Unauthenticated from "./pages/Unauthenticated";
+
+import { ProtectedRoute } from "./routes/ProtectedRoute";
+import { GuestRoute } from "./routes/GuestRoute";
 
 function App() {
   return (
@@ -17,13 +22,47 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/settings" element={<Setting />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+
+          <Route
+            path="/login"
+            element={
+              <GuestRoute>
+                <Login />
+              </GuestRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <GuestRoute>
+                <Register />
+              </GuestRoute>
+            }
+          />
+
           <Route path="/recipes/:id" element={<RecipeDetails />} />
-          <Route path="/me" element={<ProfilePage />} />
-          <Route path="/createRecipe" element={<CreateRecipeForm />} />
+          <Route path="/settings" element={<Setting />} />
+
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/me"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/createRecipe"
+            element={
+              <ProtectedRoute>
+                <CreateRecipeForm />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/unauthenticated" element={<Unauthenticated />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </Router>

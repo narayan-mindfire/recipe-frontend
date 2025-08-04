@@ -109,7 +109,7 @@ const ProfilePage = () => {
             <motion.img
               src={
                 user.profileImage
-                  ? `http://localhost:5000/uploads/${user.profileImage}`
+                  ? `${process.env.SERVER_URL}/uploads/${user.profileImage}`
                   : undefined
               }
               alt="Profile"
