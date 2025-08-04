@@ -25,17 +25,17 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         </p>
         <div className="flex justify-center gap-4">
           <Button
+            onClick={onCancel}
+            className="px-4 py-2 w-full hover:bg-[var(--accent)]"
+          >
+            Cancel
+          </Button>
+          <Button
             onClick={onConfirm}
             variant="danger"
             className="px-4 py-2 w-full"
           >
             Yes, Delete
-          </Button>
-          <Button
-            onClick={onCancel}
-            className="px-4 py-2 w-full hover:bg-[var(--accent)]"
-          >
-            Cancel
           </Button>
         </div>
       </motion.div>

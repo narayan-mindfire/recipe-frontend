@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 import API from "../service/axiosInterceptor";
 import RecipeCard from "../components/cards/RecipeCard";
 import { useDebounce } from "../hooks/useDebounce";
@@ -39,7 +39,6 @@ function Dashboard() {
     maxTime: "",
     sortBy: "updatedAt",
   });
-  const debouncedFilters = useDebounce(filters, 400);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
@@ -52,6 +51,8 @@ function Dashboard() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const hasShownToast = useRef(false);
+  const hasFetchedOnce = useRef(false);
+
   useEffect(() => {
     if (location.state?.toast && !hasShownToast.current) {
       toast.addToast(location.state.toast);
@@ -60,16 +61,17 @@ function Dashboard() {
   }, [location.state, toast]);
 
   useEffect(() => {
-    console.log("load");
     setSearchParams({ page: String(page) });
   }, [page, setSearchParams]);
 
+  const debouncedFilters = useDebounce(filters, 500);
   /**
    * Fetches filtered and paginated recipes from the API.
    * Updates loading state, recipe list, and pagination flag.
    */
   useEffect(() => {
     async function fetchRecipes() {
+      if (hasFetchedOnce.current) return;
       setLoading(true);
       try {
         const query = new URLSearchParams();
@@ -91,12 +93,12 @@ function Dashboard() {
         console.error("Error fetching recipes:", error);
       } finally {
         setLoading(false);
+        hasFetchedOnce.current = true;
       }
     }
 
     fetchRecipes();
   }, [debouncedFilters, page]);
-
   return (
     <div className="min-h-[85vh] bg-[var(--background2)] py-12 px-4">
       <div className="mx-auto">
@@ -162,4 +164,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default memo(Dashboard);
