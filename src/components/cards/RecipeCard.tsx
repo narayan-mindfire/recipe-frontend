@@ -23,6 +23,7 @@ interface RecipeCardProps {
 interface UserData {
   fname: string;
   lname: string;
+  profileImage: string;
 }
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -102,7 +103,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
         <div className="absolute top-2 right-2 z-20">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="text-xl font-bold text-[var(--accent)] hover:text-[var(--primary)]"
+            className="text-3xl font-extrabold bg-amber-50/59 rounded-xl text-[var(--accent)] hover:text-[var(--primary)]"
           >
             ⋮
           </button>
@@ -134,11 +135,19 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
 
       <div className="p-5 flex flex-col justify-between flex-1 overflow-hidden">
         <div className="flex items-center gap-3 mb-2">
-          <FontAwesomeIcon
-            icon={faUserCircle}
-            size="2x"
-            className="text-[var(--accent)]"
-          />
+          {user?.profileImage ? (
+            <img
+              src={`${serverUrl}/uploads/${user.profileImage}`}
+              alt="Profile"
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          ) : (
+            <FontAwesomeIcon
+              icon={faUserCircle}
+              size="2x"
+              className="text-[var(--accent)]"
+            />
+          )}
           <div className="text-sm font-semibold text-[var(--accent)] truncate">
             {user ? `${user.fname} ${user.lname}` : "Loading..."}
           </div>

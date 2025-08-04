@@ -20,6 +20,7 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 interface UserData {
   fname: string;
   lname: string;
+  profileImage: string;
 }
 
 export interface Comment {
@@ -195,11 +196,19 @@ export default function RecipeDetails() {
           <p className="text-sm text-[var(--muted)] mt-6">{formattedDate}</p>
 
           <div className="mt-4 flex items-center gap-3 mb-3 ">
-            <FontAwesomeIcon
-              icon={faUserCircle}
-              size="2x"
-              className="text-[var(--accent)]"
-            />
+            {user?.profileImage ? (
+              <img
+                src={`${serverUrl}/uploads/${user.profileImage}`}
+                alt="Profile"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <FontAwesomeIcon
+                icon={faUserCircle}
+                size="2x"
+                className="text-[var(--accent)]"
+              />
+            )}
             <span className="font-semibold text-[var(--accent)]">
               {user ? `${user.fname} ${user.lname}` : "Loading..."}
             </span>

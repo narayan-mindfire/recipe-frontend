@@ -1,11 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
 import { useAuth } from "../../hooks/useAuth";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 const Navbar = () => {
   const { darkMode, toggleTheme } = useTheme();
   const { currentUser, logout } = useAuth();
+  console.log("current user img: ", currentUser?.profileImage);
   const navigate = useNavigate();
-
+  const serverUrl = import.meta.env.VITE_SERVER_URL;
   const handleLogout = () => {
     logout();
     navigate("/", {
@@ -52,10 +55,19 @@ const Navbar = () => {
               className="hover:text-[var(--primary)] transition-colors duration-200"
             >
               <div className="text-sm font-medium flex items-center gap-2">
-                <i
-                  className="fas fa-user-circle text-xl"
-                  title={`${currentUser.fname} ${currentUser.lname}`}
-                ></i>
+                {currentUser.profileImage ? (
+                  <img
+                    src={`${serverUrl}/uploads/${currentUser.profileImage}`}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <FontAwesomeIcon
+                    icon={faUserCircle}
+                    className="text-xl text-[var(--accent)]"
+                    title={`${currentUser.fname} ${currentUser.lname}`}
+                  />
+                )}
                 <span>{currentUser.fname}</span>
               </div>
             </Link>
