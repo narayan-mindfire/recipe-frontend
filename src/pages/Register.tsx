@@ -20,6 +20,14 @@ const Register = () => {
   });
   const navigate = useNavigate();
   const { login } = useAuth();
+  /**
+   * Handles form submission
+   *
+   * @async
+   * @function onSubmit
+   * @param {z.infer<typeof signupSchema>} data - Validated user input.
+   * @returns {Promise<void>}
+   */
   const onSubmit = async (data: z.infer<typeof signupSchema>) => {
     try {
       const formData = new FormData();

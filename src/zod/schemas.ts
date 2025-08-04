@@ -1,11 +1,18 @@
-// validation.ts
 import { z } from "zod";
 
+/**
+ * Schema for user login form
+ * Validates email and password fields
+ */
 export const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
   password: z.string().min(6, { message: "Password too short" }),
 });
 
+/**
+ * Schema for user registration/signup
+ * Includes validation for name, email, password, optional bio, and image file
+ */
 export const signupSchema = z
   .object({
     fname: z.string().min(1, "First name is required"),
@@ -26,6 +33,10 @@ export const signupSchema = z
     path: ["confirmPassword"],
   });
 
+/**
+ * Schema for editing user profile
+ * Similar to signup but without password fields
+ */
 export const editProfileSchema = z.object({
   fname: z.string().min(1, "First name is required"),
   lname: z.string().min(1, "Last name is required"),
@@ -34,6 +45,10 @@ export const editProfileSchema = z.object({
   profileImage: z.any().optional(),
 });
 
+/**
+ * Schema for creating a new recipe
+ * Validates title, preparation time, difficulty, ingredients, steps, and image
+ */
 export const recipeFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),

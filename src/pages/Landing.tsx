@@ -4,6 +4,10 @@ import { useToast } from "../components/ui/toast/use-toast";
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
+/**
+ * landing page
+ * @returns landing page
+ */
 const Landing = () => {
   const toast = useToast();
   const hasShownToast = useRef(false);

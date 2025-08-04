@@ -18,6 +18,8 @@ import { faStar as blankStar } from "@fortawesome/free-regular-svg-icons";
 import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../components/ui/toast/use-toast";
 
+const serverUrl = import.meta.env.VITE_SERVER_URL;
+
 interface UserData {
   fname: string;
   lname: string;
@@ -172,7 +174,7 @@ export default function RecipeDetails() {
           <img
             src={
               recipe.recipeImage
-                ? `${process.env.SERVER_URL}/uploads/${recipe.recipeImage}`
+                ? `${serverUrl}/uploads/${recipe.recipeImage}`
                 : foodImage
             }
             alt={recipe.title}

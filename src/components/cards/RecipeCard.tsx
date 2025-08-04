@@ -24,7 +24,12 @@ interface UserData {
   fname: string;
   lname: string;
 }
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
+/**
+ * Displays a styled recipe card with title, author, image, rating, and description.
+ * Allows owner to delete their recipe.
+ */
 export default function RecipeCard({ recipe }: RecipeCardProps) {
   const [user, setUser] = useState<UserData | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -32,6 +37,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const toast = useToast();
   const { currentUser } = useAuth();
+  // Fetch user info for the recipe owner
   useEffect(() => {
     async function fetchUser() {
       try {
@@ -119,7 +125,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
       <img
         src={
           recipe.recipeImage
-            ? `${process.env.SERVER_URL}/uploads/${recipe.recipeImage}`
+            ? `${serverUrl}/uploads/${recipe.recipeImage}`
             : foodImage
         }
         alt={recipe.title}

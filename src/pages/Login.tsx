@@ -10,6 +10,12 @@ import { useAuth } from "../hooks/useAuth";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/toast/use-toast";
+
+/**
+ * Login page component.
+ * Handles user login using react-hook-form and zod validation.
+ * On successful login, redirects to dashboard and shows a toast.
+ */
 const Login = () => {
   const {
     register,
@@ -21,6 +27,13 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
+  /**
+   * Handles login form submission.
+   * Calls the API, logs the user in, and navigates to dashboard.
+   * Displays toast messages on success or error.
+   *
+   * @param data - User credentials from the form.
+   */
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       const res = await API.post("/auth/login", data);

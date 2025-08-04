@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
-import Setting from "./pages/Settings";
 import { Footer } from "./components/utils/Footer";
 import Navbar from "./components/utils/Navbar";
 import Register from "./pages/Register";
@@ -41,7 +40,6 @@ function App() {
           />
 
           <Route path="/recipes/:id" element={<RecipeDetails />} />
-          <Route path="/settings" element={<Setting />} />
 
           <Route path="/dashboard" element={<Dashboard />} />
           <Route

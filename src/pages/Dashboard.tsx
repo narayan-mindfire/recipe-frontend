@@ -26,6 +26,10 @@ export interface Recipe {
   __v?: number;
 }
 
+/**
+ * Dashboard component that displays a list of recipes with pagination, filtering, and conditional creation.
+ * Uses debouncing and search params for smooth UX and state sync.
+ */
 function Dashboard() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
@@ -59,6 +63,10 @@ function Dashboard() {
     setSearchParams({ page: String(page) });
   }, [page, setSearchParams]);
 
+  /**
+   * Fetches filtered and paginated recipes from the API.
+   * Updates loading state, recipe list, and pagination flag.
+   */
   useEffect(() => {
     async function fetchRecipes() {
       setLoading(true);
