@@ -6,7 +6,7 @@ import axios from "axios";
  * - withCredentials ensures cookies (e.g. auth tokens) are sent with requests
  */
 const API = axios.create({
-  baseURL: `http://localhost:5000/api/v1`,
+  baseURL: `https://recipe-backend-2-f7tb.onrender.com`,
   withCredentials: true,
 });
 
@@ -34,7 +34,7 @@ API.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default API;
