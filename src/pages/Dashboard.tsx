@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import API from "../service/axiosInterceptor";
 import RecipeCard from "../components/cards/RecipeCard";
 import { useDebounce } from "../hooks/useDebounce";
@@ -6,6 +6,8 @@ import SearchFilters from "../components/dashboard/SearchFilter";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../components/utils/Button";
+import { useToast } from "../components/ui/toast/use-toast";
+import { useLocation } from "react-router-dom";
 
 export interface Recipe {
   _id: string;
@@ -40,9 +42,18 @@ function Dashboard() {
   const [page, setPage] = useState(initialPage);
   const [hasMore, setHasMore] = useState(true);
   const limit = 6;
+  const toast = useToast();
+  const location = useLocation();
 
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const hasShownToast = useRef(false);
+  useEffect(() => {
+    if (location.state?.toast && !hasShownToast.current) {
+      toast.addToast(location.state.toast);
+      hasShownToast.current = true;
+    }
+  }, [location.state, toast]);
 
   useEffect(() => {
     setSearchParams({ page: String(page) });

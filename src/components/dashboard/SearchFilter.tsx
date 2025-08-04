@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { debounce } from "lodash";
 
 interface Props {
@@ -19,21 +19,24 @@ export default function SearchFilters({ onFilterChange }: Props) {
   const [maxTime, setMaxTime] = useState("");
   const [sortBy, setSortBy] = useState("updatedAt");
 
-  const debouncedFilterChange = useCallback(
-    debounce(() => {
-      onFilterChange({ ingredients, minRating, maxTime, sortBy }, true);
+  const debouncedFilterChange = useRef(
+    debounce((filters) => {
+      onFilterChange(filters, true);
     }, 500),
-    [],
-  );
+  ).current;
 
   useEffect(() => {
-    console.log("run");
-    debouncedFilterChange();
-    return () => debouncedFilterChange.cancel();
+    console.log("running debounce");
+    const filters = { ingredients, minRating, maxTime, sortBy };
+    debouncedFilterChange(filters);
+
+    return () => {
+      debouncedFilterChange.cancel();
+    };
   }, [ingredients, minRating, maxTime, sortBy, debouncedFilterChange]);
 
   return (
-    <div className="p-4 rounded-xl shadow flex flex-col sm:flex-row gap-4 mb-6 flex-wrap">
+    <div className="p-4 rounded-xl shadow flex flex-col sm:flex-row gap-4 mb-6 flex-wrap bg-[var(--background)]">
       <input
         className="flex-1 p-2 text-[var(--text)] rounded-md border border-gray-300 text-sm"
         placeholder="Ingredients (comma-separated)"

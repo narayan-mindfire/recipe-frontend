@@ -1,14 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
 import { useAuth } from "../../hooks/useAuth";
-
 const Navbar = () => {
   const { darkMode, toggleTheme } = useTheme();
   const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    window.location.href = "/";
+    navigate("/", {
+      state: {
+        toast: {
+          message: "Logout successful",
+          variant: "info",
+          animation: "pop",
+          mode: "dark",
+        },
+      },
+      replace: true,
+    });
   };
 
   return (

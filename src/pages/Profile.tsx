@@ -1,11 +1,13 @@
 import { memo, useEffect, useState } from "react";
 import API from "../service/axiosInterceptor";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Button from "../components/utils/Button";
 import RecipeCard from "../components/cards/RecipeCard";
 import type { Recipe } from "../pages/Dashboard";
 import EditProfileModal from "../components/utils/EditProfileModal";
+import ConfirmModal from "../components/utils/ConfirmModal";
+import { useToast } from "../components/ui/toast/use-toast";
 
 interface User {
   fname: string;
@@ -20,8 +22,9 @@ interface User {
 const ProfilePage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const navigate = useNavigate();
-
+  const toast = useToast();
   useEffect(() => {
     API.get("/auth/me")
       .then((res) => {
@@ -36,13 +39,30 @@ const ProfilePage = () => {
       .catch((err) => console.error("Error fetching recipes:", err));
   }, [navigate]);
 
-  const handleDelete = async () => {
+  const handleDeleteConfirmed = async () => {
     try {
       await API.delete("/auth/me");
-      navigate("/login");
+      navigate("/login", {
+        state: {
+          toast: {
+            message: "Account deleted successfully",
+            variant: "info",
+            animation: "pop",
+            mode: "dark",
+            icon: undefined,
+          },
+        },
+      });
     } catch {
-      alert("Failed to delete account");
+      toast.addToast({
+        message: "Failed to delete account",
+        variant: "error",
+        mode: "dark",
+        animation: "pop",
+        icon: undefined,
+      });
     }
+    setIsConfirmingDelete(false);
   };
   const [isEditing, setIsEditing] = useState(false);
 
@@ -56,10 +76,26 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background2)] py-16 px-6 text-[var(--text)]">
+      {isConfirmingDelete && (
+        <ConfirmModal
+          message="Are you sure you want to delete your account? This action is irreversible."
+          onConfirm={handleDeleteConfirmed}
+          onCancel={() => setIsConfirmingDelete(false)}
+        />
+      )}
       {isEditing && (
         <EditProfileModal
           defaultValues={{ ...user }}
           onClose={() => setIsEditing(false)}
+          onSuccess={() =>
+            toast.addToast({
+              animation: "pop",
+              mode: "dark",
+              message: "profile edited successfully",
+              variant: "default",
+              icon: undefined,
+            })
+          }
         />
       )}
       <motion.div
@@ -74,7 +110,7 @@ const ProfilePage = () => {
               src={
                 user.profileImage
                   ? `http://localhost:5000/uploads/${user.profileImage}`
-                  : ""
+                  : undefined
               }
               alt="Profile"
               className="w-36 h-36 rounded-full object-cover border-4 border-white shadow-md"
@@ -135,7 +171,7 @@ const ProfilePage = () => {
                   type="button"
                   variant="danger"
                   className="w-full"
-                  onClick={handleDelete}
+                  onClick={() => setIsConfirmingDelete(true)}
                 >
                   Delete Account
                 </Button>
@@ -177,7 +213,10 @@ const ProfilePage = () => {
         >
           <h2 className="text-2xl font-bold mb-6 text-center )]">
             You still haven't authored a recipe, share you're favourites right{" "}
-            <span className="text-[var(--primary)]">now</span>!
+            <Link to="/createRecipe">
+              <span className="text-[var(--primary)]">now</span>
+            </Link>
+            !
           </h2>
         </motion.div>
       )}

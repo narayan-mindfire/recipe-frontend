@@ -19,6 +19,15 @@ vi.mock("../../hooks/useTheme", () => ({
   }),
 }));
 
+const mockNavigate = vi.fn();
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
 const renderWithAuth = (currentUser: User | null = null) => {
   const login = vi.fn();
   const logout = vi.fn();
@@ -58,7 +67,7 @@ describe("Navbar component", () => {
     expect(screen.getByText(/logout/i)).toBeInTheDocument();
   });
 
-  it("calls logout and redirects on logout click", async () => {
+  it("calls logout and navigates to / on logout click", async () => {
     const mockUser = {
       _id: "1",
       fname: "Narayan",
@@ -67,11 +76,6 @@ describe("Navbar component", () => {
     };
 
     const logout = vi.fn();
-    const originalHref = window.location.href;
-    Object.defineProperty(window, "location", {
-      value: { href: "" },
-      writable: true,
-    });
 
     render(
       <AuthContext.Provider
@@ -91,7 +95,17 @@ describe("Navbar component", () => {
     await userEvent.click(screen.getByText(/logout/i));
 
     expect(logout).toHaveBeenCalled();
-    expect(window.location.href).toBe("/");
-    window.location.href = originalHref;
+
+    expect(mockNavigate).toHaveBeenCalledWith("/", {
+      state: {
+        toast: {
+          message: "Logout successful",
+          variant: "info",
+          animation: "pop",
+          mode: "dark",
+        },
+      },
+      replace: true,
+    });
   });
 });

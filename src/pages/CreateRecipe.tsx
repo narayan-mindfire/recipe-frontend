@@ -6,13 +6,14 @@ import API from "../service/axiosInterceptor";
 import Button from "../components/utils/Button";
 import { useNavigate } from "react-router-dom";
 import { recipeFormSchema } from "../zod/schemas";
+import { useToast } from "../components/ui/toast/use-toast";
 
 type RecipeFormData = z.infer<typeof recipeFormSchema>;
 
 export default function CreateRecipeForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-
+  const toast = useToast();
   const {
     register,
     control,
@@ -64,12 +65,27 @@ export default function CreateRecipeForm() {
         },
       });
 
-      alert("Recipe created successfully!");
       reset();
-      navigate(`/recipes/${res.data.recipe._id}`);
+      navigate(`/recipes/${res.data.recipe._id}`, {
+        state: {
+          toast: {
+            message: "Recipe created successfully",
+            variant: "info",
+            animation: "pop",
+            mode: "dark",
+          },
+        },
+        replace: true,
+      });
     } catch (err) {
       console.error(err);
-      alert("Failed to create recipe.");
+      toast.addToast({
+        message: "failed to create recipe",
+        mode: "dark",
+        variant: "error",
+        animation: "pop",
+        icon: undefined,
+      });
     } finally {
       setIsSubmitting(false);
     }

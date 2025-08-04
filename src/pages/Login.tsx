@@ -8,7 +8,8 @@ import Button from "../components/utils/Button";
 import API from "../service/axiosInterceptor";
 import { useAuth } from "../hooks/useAuth";
 import { AxiosError } from "axios";
-
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../components/ui/toast/use-toast";
 const Login = () => {
   const {
     register,
@@ -18,15 +19,31 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   });
   const { login } = useAuth();
-
+  const navigate = useNavigate();
+  const toast = useToast();
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       const res = await API.post("/auth/login", data);
       login(res.data.user, res.data.accessToken);
-      window.location.href = "/dashboard";
+      navigate("/dashboard?page=1", {
+        state: {
+          toast: {
+            message: "Login successful!",
+            variant: "success",
+            animation: "pop",
+            mode: "dark",
+          },
+        },
+      });
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
-      alert(error.response?.data?.message || "Registration failed");
+      toast.addToast({
+        message: error.response?.data?.message || "Registration failed",
+        mode: "dark",
+        variant: "error",
+        animation: "pop",
+        icon: undefined,
+      });
     }
   };
 

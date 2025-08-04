@@ -7,12 +7,14 @@ import foodImage from "../../assets/food3.png";
 import Button from "../utils/Button";
 import type { Recipe } from "../../pages/Dashboard";
 import { useAuth } from "../../hooks/useAuth";
+import ConfirmModal from "../utils/ConfirmModal";
 
 import {
   faStar as filledStar,
   faStarHalfAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as blankStar } from "@fortawesome/free-regular-svg-icons";
+import { useToast } from "../ui/toast/use-toast";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -27,7 +29,8 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
   const [user, setUser] = useState<UserData | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
-
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const toast = useToast();
   const { currentUser } = useAuth();
   useEffect(() => {
     async function fetchUser() {
@@ -41,15 +44,29 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
     fetchUser();
   }, [recipe.userId]);
 
-  const handleDelete = async () => {
+  const handleDeleteConfirmed = async () => {
     if (!recipe._id) return;
     try {
       await API.delete(`/recipes/${recipe._id}`);
       setIsDeleted(true);
+      toast.addToast({
+        message: "Recipe deleted successfully",
+        variant: "info",
+        animation: "pop",
+        mode: "dark",
+        icon: undefined,
+      });
     } catch (error) {
       console.error("Failed to delete recipe", error);
-      alert("Failed to delete recipe");
+      toast.addToast({
+        message: "Failed to delete recipe",
+        variant: "error",
+        animation: "pop",
+        mode: "dark",
+        icon: undefined,
+      });
     }
+    setConfirmDelete(false);
   };
 
   const formattedDate = new Date(recipe.createdAt).toLocaleDateString("en-US", {
@@ -67,6 +84,14 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
+      {confirmDelete && (
+        <ConfirmModal
+          message="Are you sure you want to delete this recipe?"
+          onConfirm={handleDeleteConfirmed}
+          onCancel={() => setConfirmDelete(false)}
+        />
+      )}
+
       {currentUser?._id === recipe.userId && (
         <div className="absolute top-2 right-2">
           <button
@@ -78,7 +103,10 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
           {showMenu && (
             <div className="absolute right-0 mt-2 w-32 bg-[var(--background)] border border-gray-200 rounded shadow-lg z-10">
               <button
-                onClick={handleDelete}
+                onClick={() => {
+                  setShowMenu(false);
+                  setConfirmDelete(true);
+                }}
                 className="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--background2)] text-red-500"
               >
                 Delete

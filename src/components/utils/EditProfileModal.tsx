@@ -6,6 +6,7 @@ import API from "../../service/axiosInterceptor";
 import { motion } from "framer-motion";
 import Button from "./Button";
 import { useEffect } from "react";
+import { useToast } from "../ui/toast/use-toast";
 
 interface EditProfileModalProps {
   defaultValues: z.infer<typeof editProfileSchema>;
@@ -27,7 +28,7 @@ const EditProfileModal = ({
     resolver: zodResolver(editProfileSchema),
     defaultValues,
   });
-
+  const toast = useToast();
   useEffect(() => {
     setValue("profileImage", undefined);
   }, [setValue]);
@@ -52,7 +53,20 @@ const EditProfileModal = ({
       onSuccess?.();
       onClose();
     } catch (_err) {
-      alert("Failed to update profile");
+      toast.addToast({
+        message: "failed to update profile",
+        mode: "dark",
+        animation: "pop",
+        variant: "error",
+        icon: undefined,
+      });
+      toast.addToast({
+        message: "failed to update profile",
+        mode: "dark",
+        variant: "error",
+        animation: "pop",
+        icon: undefined,
+      });
     }
   };
 

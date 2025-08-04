@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import API from "../service/axiosInterceptor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +16,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as blankStar } from "@fortawesome/free-regular-svg-icons";
 import { useAuth } from "../hooks/useAuth";
+import { useToast } from "../components/ui/toast/use-toast";
 
 interface UserData {
   fname: string;
@@ -49,6 +50,15 @@ export default function RecipeDetails() {
   const [ratingId, setRatingId] = useState<string | null>(null);
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const toast = useToast();
+  const hasShownToast = useRef(false);
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.toast && !hasShownToast.current) {
+      toast.addToast(location.state.toast);
+      hasShownToast.current = true;
+    }
+  }, [location.state, toast]);
 
   useEffect(() => {
     async function fetchRecipe() {
@@ -134,6 +144,13 @@ export default function RecipeDetails() {
       }
       setMyRating(star);
       setEditMode(false);
+      toast.addToast({
+        message: "rating added successfully",
+        variant: "info",
+        animation: "pop",
+        mode: "dark",
+        icon: undefined,
+      });
     } catch (err) {
       console.error("Rating failed", err);
     }

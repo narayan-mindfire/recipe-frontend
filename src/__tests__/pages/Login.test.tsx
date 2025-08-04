@@ -4,6 +4,17 @@ import Login from "../../pages/Login";
 import { AuthContext } from "../../context/authContext";
 import { BrowserRouter } from "react-router-dom";
 import { vi } from "vitest";
+import { ToastProvider } from "../../components/ui";
+
+const mockNavigate = vi.fn();
+
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 vi.mock("../../service/axiosInterceptor", () => ({
   default: {
@@ -11,12 +22,6 @@ vi.mock("../../service/axiosInterceptor", () => ({
   },
 }));
 import API from "../../service/axiosInterceptor";
-
-vi.spyOn(window, "alert").mockImplementation(() => {});
-Object.defineProperty(window, "location", {
-  value: { href: "" },
-  writable: true,
-});
 
 const renderWithContext = (login = vi.fn()) => {
   return render(
@@ -28,9 +33,11 @@ const renderWithContext = (login = vi.fn()) => {
         logout: vi.fn(),
       }}
     >
-      <BrowserRouter>
-        <Login />
-      </BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter>
+          <Login />
+        </BrowserRouter>
+      </ToastProvider>
     </AuthContext.Provider>,
   );
 };
@@ -68,6 +75,17 @@ test("submits login form and redirects on success", async () => {
     });
 
     expect(mockLogin).toHaveBeenCalledWith(mockUser, "fake-token");
-    expect(window.location.href).toBe("/dashboard");
+
+    // ✅ updated assertion for mocked navigation
+    expect(mockNavigate).toHaveBeenCalledWith("/dashboard?page=1", {
+      state: {
+        toast: {
+          message: "Login successful!",
+          variant: "success",
+          animation: "pop",
+          mode: "dark",
+        },
+      },
+    });
   });
 });
