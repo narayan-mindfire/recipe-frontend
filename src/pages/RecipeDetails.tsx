@@ -124,13 +124,13 @@ export default function RecipeDetails() {
               ...comment,
               user: userRes.data.user,
             };
-          })
+          }),
         );
         setComments(commentData);
 
         if (currentUser) {
           const alreadyCommented = commentData.some(
-            (c) => c.userId === currentUser._id && c.parentCommentId === null
+            (c) => c.userId === currentUser._id && c.parentCommentId === null,
           );
           setHasCommented(alreadyCommented);
         }
@@ -433,13 +433,13 @@ export default function RecipeDetails() {
                         const commentData = await Promise.all(
                           res.data.comments.map(async (comment: Comment) => {
                             const userRes = await API.get(
-                              `/users/${comment.userId}`
+                              `/users/${comment.userId}`,
                             );
                             return {
                               ...comment,
                               user: userRes.data.user,
                             };
-                          })
+                          }),
                         );
                         setComments(commentData);
                       } catch (err) {
