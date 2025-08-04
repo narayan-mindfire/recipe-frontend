@@ -1,69 +1,139 @@
-# React + TypeScript + Vite
+# Recipe Sharing Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack MERN (MongoDB, Express, React, Node.js) recipe sharing application that allows users to create, search, rate, and comment on recipes. Built with a focus on clean UI, accessibility, and route protection.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+### Recipe Management
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Create Recipes: Add recipes with title, ingredients, preparation steps, and an image.
+- View Recipes: Browse a list of recipes with filters and sorting.
+- Recipe Details: View full recipe details including user ratings and comments.
 
-```js
-export default tseslint.config([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
+### Search & Filter
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- Search by Ingredients: Type comma-separated ingredients to find matching recipes.
+- Filter Options: Filter recipes by rating and preparation time.
+- Sort By: Recently updated, top rated, or quickest first.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+### Ratings & Comments
+
+- Rate Recipes: Logged-in users can rate recipes (1–5 stars).
+- Commenting: Add comments and feedback on any recipe (if authenticated).
+
+### Authentication
+
+- User Signup/Login: Form-based registration and login.
+- Route Protection: Authenticated routes (Dashboard, Create, Profile).
+- Guest Protection: Prevent logged-in users from accessing Login/Register.
+
+### Error Handling
+
+- Display toast messages for invalid actions, unauthorized access, or API failures.
+
+---
+
+## Tech Stack
+
+| Frontend         |
+| ---------------- |
+| React 19 + Vite  |
+| Tailwind CSS     |
+| React Hook Form  |
+| Zod (validation) |
+| Context API      |
+| Vitest + RTL     |
+
+---
+
+## Project Structure
+
+```
+frontend/
+│
+├── src/
+│   ├── assets/                  # Static images and media
+│   ├── components/
+│   │   ├── dashboard/           # Filters, listings, etc.
+│   │   └── utils/               # Navbar, Footer, Buttons, Modals
+│   ├── context/                 # Auth context
+│   ├── hooks/                   # Custom hooks (e.g., useAuth, useTheme)
+│   ├── pages/                   # Route components (Login, Register, etc.)
+│   ├── routes/                  # Protected & Guest route wrappers
+│   ├── service/                 # Axios interceptors
+│   ├── zod/                     # Zod validation schemas
+│   └── main.tsx                 # Entry point
+│
+├── public/                      # Static files
+├── index.html                   # Root HTML
+└── package.json                 # Scripts & dependencies
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+## Testing
 
-export default tseslint.config([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+- Tests are written using Vitest and React Testing Library.
+- Includes route protection tests, login flow, UI components, etc.
+
+```bash
+# Run unit tests
+npm run test
 ```
+
+---
+
+## Installation & Running Locally
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/narayan-mindfire/recipe-frontend.git
+```
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Start Development Server
+
+```bash
+npm run dev
+```
+
+> App will run at: http://localhost:5173
+
+---
+
+## Route Protection Summary
+
+| Route                          | Access                  | Redirects to            |
+| ------------------------------ | ----------------------- | ----------------------- |
+| /login, /register              | Not for logged-in users | /dashboard              |
+| /dashboard, /createRecipe, /me | Logged-in only          | /unauthenticated        |
+| Unknown pages                  | Anyone                  | Renders 404 - Not Found |
+| /unauthenticated               | Public                  | Message: "Unauthorized" |
+
+---
+
+## Backend Repository
+
+https://github.com/narayan-mindfire/recipe-backend
+
+---
+
+## Scripts
+
+| Script         | Description                     |
+| -------------- | ------------------------------- |
+| npm run dev    | Start development server (Vite) |
+| npm run build  | Build app for production        |
+| npm run test   | Run tests via Vitest            |
+| npm run lint   | Lint the codebase               |
+| npm run format | Format files with Prettier      |
+
+---
