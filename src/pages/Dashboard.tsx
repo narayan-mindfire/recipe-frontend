@@ -60,7 +60,6 @@ function Dashboard() {
   }, [location.state, toast]);
 
   useEffect(() => {
-    console.log("load");
     setSearchParams({ page: String(page) });
   }, [page, setSearchParams]);
 

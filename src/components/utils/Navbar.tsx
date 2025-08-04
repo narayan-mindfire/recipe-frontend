@@ -6,7 +6,6 @@ import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 const Navbar = () => {
   const { darkMode, toggleTheme } = useTheme();
   const { currentUser, logout } = useAuth();
-  console.log("current user img: ", currentUser?.profileImage);
   const navigate = useNavigate();
   const serverUrl = import.meta.env.VITE_SERVER_URL;
   const handleLogout = () => {

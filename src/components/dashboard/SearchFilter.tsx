@@ -18,6 +18,7 @@ export default function SearchFilters({ onFilterChange }: Props) {
   const [minRating, setMinRating] = useState("");
   const [maxTime, setMaxTime] = useState("");
   const [sortBy, setSortBy] = useState("updatedAt");
+  const [order, setOrder] = useState(-1);
 
   const debouncedFilterChange = useRef(
     debounce((filters) => {
@@ -26,13 +27,13 @@ export default function SearchFilters({ onFilterChange }: Props) {
   ).current;
 
   useEffect(() => {
-    const filters = { ingredients, minRating, maxTime, sortBy };
+    const filters = { ingredients, minRating, maxTime, sortBy, order };
     debouncedFilterChange(filters);
 
     return () => {
       debouncedFilterChange.cancel();
     };
-  }, [ingredients, minRating, maxTime, sortBy, debouncedFilterChange]);
+  }, [order, ingredients, minRating, maxTime, sortBy, debouncedFilterChange]);
 
   return (
     <div className="p-4 rounded-xl shadow flex flex-col sm:flex-row gap-4 mb-6 flex-wrap bg-[var(--background)]">
@@ -59,7 +60,18 @@ export default function SearchFilters({ onFilterChange }: Props) {
       <select
         className="p-2 text-[var(--text)] rounded-md border border-gray-300 text-sm"
         value={sortBy}
-        onChange={(e) => setSortBy(e.target.value)}
+        onChange={(e) => {
+          const value = e.target.value;
+          setSortBy(value);
+
+          if (value === "averageRating") {
+            setOrder(-1);
+          } else if (value === "preparationTime") {
+            setOrder(1);
+          } else {
+            setOrder(-1);
+          }
+        }}
       >
         <option
           className="bg-[var(--background)] text-[var(--text)]]"

@@ -5,6 +5,7 @@ import API from "../service/axiosInterceptor";
 const LOCAL_KEY = "auth";
 
 interface User {
+  _id: string;
   fname: string;
   lname: string;
   email: string;
