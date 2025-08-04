@@ -9,7 +9,7 @@ interface Props {
       maxTime: string;
       sortBy: string;
     },
-    shouldResetPage: boolean
+    shouldResetPage: boolean,
   ) => void;
 }
 
@@ -23,7 +23,7 @@ export default function SearchFilters({ onFilterChange }: Props) {
   const debouncedFilterChange = useRef(
     debounce((filters) => {
       onFilterChange(filters, true);
-    }, 500)
+    }, 500),
   ).current;
 
   useEffect(() => {
