@@ -24,7 +24,7 @@ const Button: FC<ButtonProps> = ({
     default:
       "bg-[var(--accent)] text-white hover:bg-[var(--primary)] hover:text-[var(--text)] focus:ring-[var(--highlight)]",
     outline:
-      "bg-[var(--background)] text-[var(--text)] border border-[var(--text)] hover:bg-[var(--primary)] hover:text-white focus:ring-[var(--primary)]",
+      "bg-[var(--background)] text-[var(--text)] border border-[var(--text)] hover:bg-[var(--accent)] hover:text-white focus:ring-[var(--primary)]",
     danger:
       "bg-[var(--background)] text-[var(--text)] border border-[var(--text)] hover:bg-red-600 hover:text-white focus:ring-red-500",
   };

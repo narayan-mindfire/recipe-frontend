@@ -14,12 +14,16 @@ import RecipeStats from "../components/utils/RecipeStats";
 import RecipeSteps from "../components/utils/RecipeStep";
 import IngredientsList from "../components/utils/IngredientList";
 import CommentSection from "../components/utils/CommentSection";
+import EditRecipeModal from "../components/utils/EditRecipeModal";
+import Button from "../components/utils/Button";
+import ConfirmModal from "../components/utils/ConfirmModal";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 interface UserData {
   fname: string;
   lname: string;
+  profileImage: string;
 }
 
 export interface Comment {
@@ -50,6 +54,9 @@ export default function RecipeDetails() {
   const [ratingId, setRatingId] = useState<string | null>(null);
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
   const toast = useToast();
   const hasShownToast = useRef(false);
   const location = useLocation();
@@ -161,6 +168,31 @@ export default function RecipeDetails() {
     }
   };
 
+  const handleDeleteConfirmed = async () => {
+    if (!recipe?._id) return;
+    try {
+      await API.delete(`/recipes/${recipe._id}`);
+      toast.addToast({
+        message: "Recipe deleted successfully",
+        variant: "info",
+        animation: "pop",
+        mode: "dark",
+        icon: undefined,
+      });
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.error("Failed to delete recipe", error);
+      toast.addToast({
+        message: "Failed to delete recipe",
+        variant: "error",
+        animation: "pop",
+        mode: "dark",
+        icon: undefined,
+      });
+    }
+    setConfirmDelete(false);
+  };
+
   if (!recipe)
     return <div className="text-center p-10 text-xl">Loading...</div>;
 
@@ -175,6 +207,27 @@ export default function RecipeDetails() {
 
   return (
     <div className="p-6 sm:p-12 bg-[var(--background)] text-[var(--text)] transition-colors duration-300">
+      <div className="relative">
+        {currentUser?._id === recipe.userId && (
+          <>
+            <Button
+              onClick={() => setShowEditModal(true)}
+              variant="outline"
+              className="absolute top-0 right-0 z-10"
+            >
+              Edit Recipe
+            </Button>
+            <Button
+              onClick={() => setConfirmDelete(true)}
+              variant="danger"
+              className="absolute top-0 left-0 md:right-30 md:left-auto z-10"
+            >
+              delete Recipe
+            </Button>
+          </>
+        )}
+      </div>
+
       <div className="max-w-5xl mx-auto gap-8">
         <div>
           <img
@@ -184,7 +237,7 @@ export default function RecipeDetails() {
                 : foodImage
             }
             alt={recipe.title}
-            className="rounded-xl w-full h-[300px] sm:h-[400px] object-contain shadow-lg"
+            className="rounded-xl w-full h-[300px] sm:h-[400px] object-contain mt-10 md:mt-0"
           />
           <h1 className="mt-6 text-3xl font-bold text-[var(--primary)]">
             {recipe.title}
@@ -195,11 +248,19 @@ export default function RecipeDetails() {
           <p className="text-sm text-[var(--muted)] mt-6">{formattedDate}</p>
 
           <div className="mt-4 flex items-center gap-3 mb-3 ">
-            <FontAwesomeIcon
-              icon={faUserCircle}
-              size="2x"
-              className="text-[var(--accent)]"
-            />
+            {user?.profileImage ? (
+              <img
+                src={`${serverUrl}/uploads/${user.profileImage}`}
+                alt="Profile"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <FontAwesomeIcon
+                icon={faUserCircle}
+                size="2x"
+                className="text-[var(--accent)]"
+              />
+            )}
             <span className="font-semibold text-[var(--accent)]">
               {user ? `${user.fname} ${user.lname}` : "Loading..."}
             </span>
@@ -289,6 +350,29 @@ export default function RecipeDetails() {
           <CommentSection recipeId={recipe._id} />
         </div>
       </div>
+      {showEditModal && recipe && (
+        <EditRecipeModal
+          recipe={recipe}
+          onClose={() => setShowEditModal(false)}
+          onUpdateSuccess={(updated) => {
+            setRecipe(updated);
+            toast.addToast({
+              message: "Recipe updated successfully",
+              variant: "info",
+              animation: "pop",
+              mode: "dark",
+              icon: undefined,
+            });
+          }}
+        />
+      )}
+      {confirmDelete && (
+        <ConfirmModal
+          message="Are you sure you want to delete this recipe?"
+          onConfirm={handleDeleteConfirmed}
+          onCancel={() => setConfirmDelete(false)}
+        />
+      )}
     </div>
   );
 }

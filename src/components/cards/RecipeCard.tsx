@@ -6,15 +6,11 @@ import API from "../../service/axiosInterceptor";
 import foodImage from "../../assets/food3.png";
 import Button from "../utils/Button";
 import type { Recipe } from "../../pages/Dashboard";
-import { useAuth } from "../../hooks/useAuth";
-import ConfirmModal from "../utils/ConfirmModal";
-
 import {
   faStar as filledStar,
   faStarHalfAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as blankStar } from "@fortawesome/free-regular-svg-icons";
-import { useToast } from "../ui/toast/use-toast";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -23,6 +19,7 @@ interface RecipeCardProps {
 interface UserData {
   fname: string;
   lname: string;
+  profileImage: string;
 }
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -32,11 +29,6 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
  */
 export default function RecipeCard({ recipe }: RecipeCardProps) {
   const [user, setUser] = useState<UserData | null>(null);
-  const [showMenu, setShowMenu] = useState(false);
-  const [isDeleted, setIsDeleted] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const toast = useToast();
-  const { currentUser } = useAuth();
   // Fetch user info for the recipe owner
   useEffect(() => {
     async function fetchUser() {
@@ -50,39 +42,11 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
     fetchUser();
   }, [recipe.userId]);
 
-  const handleDeleteConfirmed = async () => {
-    if (!recipe._id) return;
-    try {
-      await API.delete(`/recipes/${recipe._id}`);
-      setIsDeleted(true);
-      toast.addToast({
-        message: "Recipe deleted successfully",
-        variant: "info",
-        animation: "pop",
-        mode: "dark",
-        icon: undefined,
-      });
-    } catch (error) {
-      console.error("Failed to delete recipe", error);
-      toast.addToast({
-        message: "Failed to delete recipe",
-        variant: "error",
-        animation: "pop",
-        mode: "dark",
-        icon: undefined,
-      });
-    }
-    setConfirmDelete(false);
-  };
-
   const formattedDate = new Date(recipe.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-  if (isDeleted) {
-    return null;
-  }
   return (
     <motion.div
       className="relative w-full sm:w-[300px] h-[550px] bg-[var(--highlight)] rounded-2xl shadow-lg text-[var(--text)] overflow-hidden flex flex-col transition-all hover:shadow-xl"
@@ -90,38 +54,6 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      {confirmDelete && (
-        <ConfirmModal
-          message="Are you sure you want to delete this recipe?"
-          onConfirm={handleDeleteConfirmed}
-          onCancel={() => setConfirmDelete(false)}
-        />
-      )}
-
-      {currentUser?._id === recipe.userId && (
-        <div className="absolute top-2 right-2 z-20">
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="text-xl font-bold text-[var(--accent)] hover:text-[var(--primary)]"
-          >
-            ⋮
-          </button>
-          {showMenu && (
-            <div className="absolute right-0 mt-2 w-32 bg-[var(--background)] border border-gray-200 rounded shadow-lg z-30">
-              <button
-                onClick={() => {
-                  setShowMenu(false);
-                  setConfirmDelete(true);
-                }}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--background2)] text-red-500"
-              >
-                Delete
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
       <img
         src={
           recipe.recipeImage
@@ -134,11 +66,19 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
 
       <div className="p-5 flex flex-col justify-between flex-1 overflow-hidden">
         <div className="flex items-center gap-3 mb-2">
-          <FontAwesomeIcon
-            icon={faUserCircle}
-            size="2x"
-            className="text-[var(--accent)]"
-          />
+          {user?.profileImage ? (
+            <img
+              src={`${serverUrl}/uploads/${user.profileImage}`}
+              alt="Profile"
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          ) : (
+            <FontAwesomeIcon
+              icon={faUserCircle}
+              size="2x"
+              className="text-[var(--accent)]"
+            />
+          )}
           <div className="text-sm font-semibold text-[var(--accent)] truncate">
             {user ? `${user.fname} ${user.lname}` : "Loading..."}
           </div>
