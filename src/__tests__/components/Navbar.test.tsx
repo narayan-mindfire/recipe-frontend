@@ -10,6 +10,7 @@ interface User {
   fname: string;
   lname: string;
   email: string;
+  profileImage: string;
 }
 
 vi.mock("../../hooks/useTheme", () => ({
@@ -39,7 +40,7 @@ const renderWithAuth = (currentUser: User | null = null) => {
       <BrowserRouter>
         <Navbar />
       </BrowserRouter>
-    </AuthContext.Provider>,
+    </AuthContext.Provider>
   );
 
   return { login, logout };
@@ -59,6 +60,7 @@ describe("Navbar component", () => {
       fname: "Narayan",
       lname: "Pradhan",
       email: "narayan@pradhan.com",
+      profileImage: "https://github.com/narayan-mindfire/recipe-backend",
     };
 
     renderWithAuth(mockUser);
@@ -73,6 +75,7 @@ describe("Navbar component", () => {
       fname: "Narayan",
       lname: "Pradhan",
       email: "narayan@pradhan.com",
+      profileImage: "https://github.com/narayan-mindfire/recipe-backend",
     };
 
     const logout = vi.fn();
@@ -89,7 +92,7 @@ describe("Navbar component", () => {
         <BrowserRouter>
           <Navbar />
         </BrowserRouter>
-      </AuthContext.Provider>,
+      </AuthContext.Provider>
     );
 
     await userEvent.click(screen.getByText(/logout/i));
