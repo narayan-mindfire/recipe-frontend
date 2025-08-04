@@ -166,9 +166,24 @@ export default function CreateRecipeForm() {
               {...register("difficulty")}
               className="w-full p-2 border rounded mt-1"
             >
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
+              <option
+                className="bg-[var(--background)] text-[var(--text)]]"
+                value="easy"
+              >
+                Easy
+              </option>
+              <option
+                className="bg-[var(--background)] text-[var(--text)]]"
+                value="medium"
+              >
+                Medium
+              </option>
+              <option
+                className="bg-[var(--background)] text-[var(--text)]]"
+                value="hard"
+              >
+                Hard
+              </option>
             </select>
             {errors.difficulty && (
               <p className="text-[var(--primary)] text-sm mt-1">
