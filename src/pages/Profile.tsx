@@ -18,7 +18,13 @@ interface User {
   createdAt: string;
   updatedAt: string;
 }
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
+/**
+ * ProfilePage component
+ * Displays the logged-in user's profile details and their authored recipes.
+ * Also allows editing or deleting the account.
+ */
 const ProfilePage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -39,6 +45,9 @@ const ProfilePage = () => {
       .catch((err) => console.error("Error fetching recipes:", err));
   }, [navigate]);
 
+  /**
+   * Handles account deletion confirmation
+   */
   const handleDeleteConfirmed = async () => {
     try {
       await API.delete("/auth/me");
@@ -109,7 +118,7 @@ const ProfilePage = () => {
             <motion.img
               src={
                 user.profileImage
-                  ? `${process.env.SERVER_URL}/uploads/${user.profileImage}`
+                  ? `${serverUrl}/uploads/${user.profileImage}`
                   : undefined
               }
               alt="Profile"

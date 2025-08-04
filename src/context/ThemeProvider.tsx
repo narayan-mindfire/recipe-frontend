@@ -1,6 +1,14 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { ThemeContext } from "./themeContext";
 
+/**
+ * ThemeProvider component handles the light/dark theme toggle functionality.
+ * It syncs the user's preference with localStorage and applies the appropriate CSS class to the <html> element.
+ *
+ * @param {Object} props
+ * @param {ReactNode} props.children - Components that will consume the theme context.
+ * @returns {JSX.Element} ThemeContext.Provider with `darkMode` state and `toggleTheme` function.
+ */
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";

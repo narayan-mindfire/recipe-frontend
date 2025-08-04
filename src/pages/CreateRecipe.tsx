@@ -10,6 +10,11 @@ import { useToast } from "../components/ui/toast/use-toast";
 
 type RecipeFormData = z.infer<typeof recipeFormSchema>;
 
+/**
+ * Form component to create a new recipe.
+ * Users can enter title, description, time, difficulty, ingredients, steps, and upload an image.
+ * Submits a `multipart/form-data` POST request to backend.
+ */
 export default function CreateRecipeForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -38,6 +43,13 @@ export default function CreateRecipeForm() {
     name: "steps",
   });
 
+  /**
+   * Handles form submission.
+   * Constructs FormData object and sends it to the backend.
+   * Shows toast notifications and navigates on success.
+   *
+   * @param data - Form input data validated by Zod.
+   */
   const onSubmit = async (data: RecipeFormData) => {
     setIsSubmitting(true);
     try {

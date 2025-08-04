@@ -22,7 +22,7 @@ const Button: FC<ButtonProps> = ({
 
   const variants: Record<string, string> = {
     default:
-      "bg-[var(--accent)] text-white hover:bg-[var(--primary)] hover:text-[var(--text)] focus:ring-[var(--primary)]",
+      "bg-[var(--accent)] text-white hover:bg-[var(--primary)] hover:text-[var(--text)] focus:ring-[var(--highlight)]",
     outline:
       "bg-[var(--background)] text-[var(--text)] border border-[var(--text)] hover:bg-[var(--primary)] hover:text-white focus:ring-[var(--primary)]",
     danger:

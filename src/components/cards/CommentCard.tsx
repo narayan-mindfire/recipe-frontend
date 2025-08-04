@@ -33,6 +33,15 @@ interface Reply {
   hasChildren: boolean;
 }
 
+/**
+ * Renders a single comment with the ability to reply and view nested replies.
+ * @param comment - Comment text.
+ * @param recipeId - ID of the recipe the comment belongs to.
+ * @param commentUser - User who posted the comment.
+ * @param createdAt - Date when the comment was created.
+ * @param commentId - Unique ID of the comment.
+ * @param hasChildren - Whether the comment has replies.
+ */
 export default function CommentCard({
   comment,
   recipeId,

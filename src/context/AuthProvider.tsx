@@ -10,6 +10,13 @@ interface User {
   email: string;
 }
 
+/**
+ * AuthProvider is a context provider component that manages user authentication state.
+ * It provides `currentUser`, `accessToken`, `login`, and `logout` functions to children components via context.
+ *
+ * @param {ReactNode} children - React child components that will consume the context.
+ * @returns {JSX.Element} AuthContext.Provider
+ */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem(LOCAL_KEY);
