@@ -40,7 +40,7 @@ const renderWithAuth = (currentUser: User | null = null) => {
       <BrowserRouter>
         <Navbar />
       </BrowserRouter>
-    </AuthContext.Provider>
+    </AuthContext.Provider>,
   );
 
   return { login, logout };
@@ -92,7 +92,7 @@ describe("Navbar component", () => {
         <BrowserRouter>
           <Navbar />
         </BrowserRouter>
-      </AuthContext.Provider>
+      </AuthContext.Provider>,
     );
 
     await userEvent.click(screen.getByText(/logout/i));
