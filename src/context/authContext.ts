@@ -8,7 +8,7 @@ interface User {
 }
 
 interface AuthContextType {
-  user: User | null;
+  currentUser: User | null;
   accessToken: string | null;
   login: (user: User, token: string) => void;
   logout: () => void;

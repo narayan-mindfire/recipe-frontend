@@ -1,7 +1,19 @@
 import { motion } from "framer-motion";
 import { HeroSection } from "../components/utils/Hero";
+import { useToast } from "../components/ui/toast/use-toast";
+import { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 const Landing = () => {
+  const toast = useToast();
+  const hasShownToast = useRef(false);
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.toast && !hasShownToast.current) {
+      toast.addToast(location.state.toast);
+      hasShownToast.current = true;
+    }
+  }, [location.state, toast]);
   return (
     <div className="bg-[var(--background)] text-[var(--text)] transition-colors duration-300">
       <HeroSection />

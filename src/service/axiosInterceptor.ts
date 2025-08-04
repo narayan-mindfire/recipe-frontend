@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1",
+  baseURL: `http://localhost:5000/api/v1`,
   withCredentials: true,
 });
 
@@ -16,11 +16,11 @@ API.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        console.log("trying to refresh token............");
         await API.post("/auth/refresh-token");
         return API(originalRequest);
       } catch (refreshError) {
         console.error("Refresh token failed", refreshError);
+        window.location.href = "/login";
       }
     }
     return Promise.reject(error);

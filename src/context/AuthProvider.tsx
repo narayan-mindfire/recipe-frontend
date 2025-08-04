@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { AuthContext } from "./authContext";
+import API from "../service/axiosInterceptor";
 
 const LOCAL_KEY = "auth";
 
@@ -10,7 +11,7 @@ interface User {
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState(() => {
+  const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem(LOCAL_KEY);
     return saved ? JSON.parse(saved).user : null;
   });
@@ -21,8 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const login = (user: User, token: string) => {
-    console.log(user);
-    setUser(user);
+    setCurrentUser(user);
     setAccessToken(token);
     localStorage.setItem(
       LOCAL_KEY,
@@ -30,14 +30,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const logout = () => {
-    setUser(null);
+  const logout = async () => {
+    setCurrentUser(null);
     setAccessToken(null);
-    localStorage.removeItem(LOCAL_KEY);
+    localStorage.clear();
+    await API.post("auth/logout");
   };
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, login, logout }}>
+    <AuthContext.Provider value={{ currentUser, accessToken, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

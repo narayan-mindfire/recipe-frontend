@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import API from "../service/axiosInterceptor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import type { Recipe } from "./Dashboard";
 import foodImage from "../assets/food3.png";
+import CommentCard from "../components/cards/CommentCard";
+
 import {
   faClock,
   faSignal,
@@ -12,16 +14,51 @@ import {
   faThumbsUp,
   faClipboardList,
 } from "@fortawesome/free-solid-svg-icons";
+import { faStar as blankStar } from "@fortawesome/free-regular-svg-icons";
+import { useAuth } from "../hooks/useAuth";
+import { useToast } from "../components/ui/toast/use-toast";
 
 interface UserData {
   fname: string;
   lname: string;
 }
 
+export interface Comment {
+  comment: string;
+  createdAt: string;
+  hasChildren: boolean;
+  parentCommentId: string | null;
+  recipeId: string;
+  updatedAt: string;
+  userId: string;
+  _id: string;
+  user: {
+    fname: string;
+    lname: string;
+  };
+}
+
 export default function RecipeDetails() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [user, setUser] = useState<UserData | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const { currentUser } = useAuth();
+  const [commentText, setCommentText] = useState("");
+  const [hasCommented, setHasCommented] = useState(false);
+  const [myRating, setMyRating] = useState<number | null>(null);
+  const [ratingId, setRatingId] = useState<string | null>(null);
+  const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const toast = useToast();
+  const hasShownToast = useRef(false);
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.toast && !hasShownToast.current) {
+      toast.addToast(location.state.toast);
+      hasShownToast.current = true;
+    }
+  }, [location.state, toast]);
 
   useEffect(() => {
     async function fetchRecipe() {
@@ -49,6 +86,76 @@ export default function RecipeDetails() {
     fetchUser();
   }, [recipe]);
 
+  useEffect(() => {
+    async function fetchComments() {
+      try {
+        const res = await API.get(`/comments/${id}`);
+        const commentData = await Promise.all(
+          res.data.comments.map(async (comment: Comment) => {
+            const userRes = await API.get(`/users/${comment.userId}`);
+            return {
+              ...comment,
+              user: userRes.data.user,
+            };
+          }),
+        );
+        setComments(commentData);
+
+        if (currentUser) {
+          const alreadyCommented = commentData.some(
+            (c) => c.userId === currentUser._id && c.parentCommentId === null,
+          );
+          setHasCommented(alreadyCommented);
+        }
+      } catch (err) {
+        console.error("Error fetching comments:", err);
+      }
+    }
+
+    fetchComments();
+  }, [id, currentUser]);
+
+  useEffect(() => {
+    async function fetchMyRating() {
+      try {
+        const res = await API.get(`/ratings/${id}`);
+        setMyRating(res.data.myRating.rating);
+        setRatingId(res.data.myRating._id);
+      } catch (_err) {
+        console.error("Failed to fetch my rating");
+      }
+    }
+    if (currentUser) {
+      fetchMyRating();
+    }
+  }, [currentUser, id]);
+
+  const handleRatingClick = async (star: number) => {
+    if (!currentUser || !id || (myRating && !editMode)) return;
+    try {
+      if (myRating && editMode) {
+        await API.put(`/ratings/${ratingId}`, { rating: star });
+      } else {
+        const res = await API.post("/ratings", {
+          recipeId: id,
+          rating: star,
+        });
+        setRatingId(res.data.rating._id);
+      }
+      setMyRating(star);
+      setEditMode(false);
+      toast.addToast({
+        message: "rating added successfully",
+        variant: "info",
+        animation: "pop",
+        mode: "dark",
+        icon: undefined,
+      });
+    } catch (err) {
+      console.error("Rating failed", err);
+    }
+  };
+
   if (!recipe)
     return <div className="text-center p-10 text-xl">Loading...</div>;
 
@@ -59,11 +166,15 @@ export default function RecipeDetails() {
   });
 
   return (
-    <div className="p-6 sm:p-12 bg-[var(--background)] text-[var(--text)]">
+    <div className="p-6 sm:p-12 bg-[var(--background)] text-[var(--text)] transition-colors duration-300">
       <div className="max-w-5xl mx-auto gap-8">
         <div>
           <img
-            src={foodImage}
+            src={
+              recipe.recipeImage
+                ? `${process.env.SERVER_URL}/uploads/${recipe.recipeImage}`
+                : foodImage
+            }
             alt={recipe.title}
             className="rounded-xl w-full h-[300px] sm:h-[400px] object-cover shadow-lg"
           />
@@ -87,7 +198,7 @@ export default function RecipeDetails() {
           </div>
         </div>
 
-        <div className="bg-[var(--highlight)] p-6 rounded-xl shadow-md space-y-4">
+        <div className="bg-[var(--background2)] p-6 rounded-xl shadow-md space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex items-center gap-3 p-4 bg-[var(--background)] rounded-xl shadow-sm">
               <FontAwesomeIcon
@@ -189,6 +300,144 @@ export default function RecipeDetails() {
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+          <div className="mt-6 p-4 ">
+            <h2 className="text-lg font-bold mb-2 text-[var(--primary)]">
+              {currentUser ? (
+                myRating ? (
+                  "Your Rating"
+                ) : (
+                  "Rate this recipe"
+                )
+              ) : (
+                <p className="text-black">
+                  Please{" "}
+                  <Link
+                    to={"/login"}
+                    className="text-[var(--primary)] hover:underline"
+                  >
+                    login
+                  </Link>{" "}
+                  to rate this recipe
+                </p>
+              )}
+            </h2>
+
+            <div className="flex items-center space-x-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FontAwesomeIcon
+                  key={star}
+                  icon={
+                    (hoveredStar ?? myRating ?? 0) >= star ? faStar : blankStar
+                  }
+                  className="text-yellow-400 text-2xl cursor-pointer"
+                  onMouseEnter={() =>
+                    (!myRating || editMode) ?? setHoveredStar(star)
+                  }
+                  onMouseLeave={() =>
+                    (!myRating || editMode) ?? setHoveredStar(null)
+                  }
+                  onClick={() => handleRatingClick(star)}
+                />
+              ))}
+              {myRating && !editMode && (
+                <button
+                  className="ml-4 px-3 py-1 rounded-md bg-[var(--accent)] text-white text-sm"
+                  onClick={() => setEditMode(true)}
+                >
+                  Edit Rating
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-[var(--primary)] mb-4">
+              Comments
+            </h2>
+
+            {currentUser && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-2 text-[var(--text)]">
+                  {hasCommented
+                    ? "You’ve already commented on this recipe."
+                    : "Leave a Comment"}
+                </h3>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <textarea
+                    className="w-full p-3 rounded-md border border-gray-300 text-sm text-[var(--text)] bg-[var(--background)] resize-none"
+                    rows={3}
+                    placeholder="Write your comment..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    disabled={hasCommented}
+                  />
+                  <button
+                    className="bg-[var(--accent)] text-white px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={async () => {
+                      try {
+                        await API.post("/comments", {
+                          recipeId: recipe._id,
+                          comment: commentText,
+                        });
+                        setCommentText("");
+                        setHasCommented(true);
+                        const res = await API.get(`/comments/${id}`);
+                        const commentData = await Promise.all(
+                          res.data.comments.map(async (comment: Comment) => {
+                            const userRes = await API.get(
+                              `/users/${comment.userId}`,
+                            );
+                            return {
+                              ...comment,
+                              user: userRes.data.user,
+                            };
+                          }),
+                        );
+                        setComments(commentData);
+                      } catch (err) {
+                        console.error("Error submitting comment", err);
+                      }
+                    }}
+                    disabled={hasCommented || !commentText.trim()}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            )}
+            {!currentUser && (
+              <h3 className="text-lg font-semibold mb-2 text-[var(--text)]">
+                Please{" "}
+                <Link
+                  to={"/login"}
+                  className="text-[var(--primary)] hover:underline"
+                >
+                  login
+                </Link>{" "}
+                to comment on this recipe
+              </h3>
+            )}
+
+            <div className="space-y-4">
+              {comments.length === 0 ? (
+                <p className="text-[var(--muted)]">
+                  No comments yet. Be the first one to comment!
+                </p>
+              ) : (
+                comments.map((c, _i) => (
+                  <CommentCard
+                    recipeId={recipe._id}
+                    key={c._id}
+                    commentId={c._id}
+                    comment={c.comment}
+                    commentUser={c.user}
+                    createdAt={c.createdAt}
+                    hasChildren={c.hasChildren}
+                  />
+                ))
+              )}
             </div>
           </div>
         </div>

@@ -8,15 +8,43 @@ export const loginSchema = z.object({
 
 export const signupSchema = z
   .object({
-    fname: z.string().min(2, "First name must be at least 2 characters"),
-    lname: z.string().min(2, "Last name must be at least 2 characters"),
-    email: z.string().email("Enter a valid email"),
+    fname: z.string().min(1, "First name is required"),
+    lname: z.string().min(1, "Last name is required"),
+    email: z.email("Invalid email"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
-    bio: z.string().max(300, "Bio should be under 300 characters").optional(),
-    profileImage: z.string().url("Must be a valid URL").optional(),
+    bio: z.string().optional(),
+    profileImage: z
+      .any()
+      .refine((file) => file instanceof File || file === undefined, {
+        message: "Profile image must be a file",
+      })
+      .optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
     message: "Passwords do not match",
+    path: ["confirmPassword"],
   });
+
+export const editProfileSchema = z.object({
+  fname: z.string().min(1, "First name is required"),
+  lname: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  bio: z.string().optional(),
+  profileImage: z.any().optional(),
+});
+
+export const recipeFormSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  preparationTime: z.number().min(1, "preparation time must be >= 1"),
+  difficulty: z.enum(["easy", "medium", "hard"]),
+  ingredientsRaw: z.string().min(1, "Ingredients are required"),
+  steps: z.array(z.string().min(1, "Step cannot be empty")),
+  recipeImage: z
+    .any()
+    .refine((file) => file instanceof FileList || file === undefined, {
+      message: "Invalid file",
+    })
+    .optional(),
+});
