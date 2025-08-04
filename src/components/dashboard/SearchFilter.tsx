@@ -26,7 +26,6 @@ export default function SearchFilters({ onFilterChange }: Props) {
   ).current;
 
   useEffect(() => {
-    console.log("running debounce");
     const filters = { ingredients, minRating, maxTime, sortBy };
     debouncedFilterChange(filters);
 
@@ -62,9 +61,24 @@ export default function SearchFilters({ onFilterChange }: Props) {
         value={sortBy}
         onChange={(e) => setSortBy(e.target.value)}
       >
-        <option value="updatedAt">Recently Updated</option>
-        <option value="averageRating">Top Rated</option>
-        <option value="preparationTime">Quickest First</option>
+        <option
+          className="bg-[var(--background)] text-[var(--text)]]"
+          value="updatedAt"
+        >
+          Recently Updated
+        </option>
+        <option
+          className="bg-[var(--background)] text-[var(--text)]]"
+          value="averageRating"
+        >
+          Top Rated
+        </option>
+        <option
+          className="bg-[var(--background)] text-[var(--text)]]"
+          value="preparationTime"
+        >
+          Quickest First
+        </option>
       </select>
     </div>
   );
