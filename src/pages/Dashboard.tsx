@@ -71,7 +71,6 @@ function Dashboard() {
    */
   useEffect(() => {
     async function fetchRecipes() {
-      if (hasFetchedOnce.current) return;
       setLoading(true);
       try {
         const query = new URLSearchParams();
