@@ -85,7 +85,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
   }
   return (
     <motion.div
-      className="relative w-full sm:w-[300px] h-[500px] bg-[var(--highlight)] rounded-2xl shadow-lg text-[var(--text)] overflow-hidden flex flex-col transition-all hover:shadow-xl"
+      className="relative w-full sm:w-[300px] h-[550px] bg-[var(--highlight)] rounded-2xl shadow-lg text-[var(--text)] overflow-hidden flex flex-col transition-all hover:shadow-xl"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -99,7 +99,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
       )}
 
       {currentUser?._id === recipe.userId && (
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-2 right-2 z-20">
           <button
             onClick={() => setShowMenu(!showMenu)}
             className="text-xl font-bold text-[var(--accent)] hover:text-[var(--primary)]"
@@ -107,7 +107,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
             ⋮
           </button>
           {showMenu && (
-            <div className="absolute right-0 mt-2 w-32 bg-[var(--background)] border border-gray-200 rounded shadow-lg z-10">
+            <div className="absolute right-0 mt-2 w-32 bg-[var(--background)] border border-gray-200 rounded shadow-lg z-30">
               <button
                 onClick={() => {
                   setShowMenu(false);
@@ -132,19 +132,19 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
         className="w-full h-[300px] object-cover bg-[var(--background2)]"
       />
 
-      <div className="p-5 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
+      <div className="p-5 flex flex-col justify-between flex-1 overflow-hidden">
+        <div className="flex items-center gap-3 mb-2">
           <FontAwesomeIcon
             icon={faUserCircle}
             size="2x"
             className="text-[var(--accent)]"
           />
-          <div className="text-sm font-semibold text-[var(--accent)]">
+          <div className="text-sm font-semibold text-[var(--accent)] truncate">
             {user ? `${user.fname} ${user.lname}` : "Loading..."}
           </div>
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-1 flex-1 overflow-hidden">
           <h2 className="text-xl font-bold text-[var(--primary)] truncate">
             {recipe.title}
           </h2>
@@ -175,18 +175,21 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
             </span>
           </div>
 
-          <p className="text-xs text-[var(--accent)]">{formattedDate}</p>
-          <p className="text-sm text-[var(--accent)] leading-snug truncate w-full">
+          <p className="text-xs text-[var(--accent)] truncate">
+            {formattedDate}
+          </p>
+          <p className="text-sm text-[var(--muted)] leading-snug line-clamp-3">
             {recipe.description}
           </p>
-          <Button
-            variant="default"
-            to={`/recipes/${recipe._id}`}
-            className="w-full"
-          >
-            view full recipe
-          </Button>
         </div>
+
+        <Button
+          variant="default"
+          to={`/recipes/${recipe._id}`}
+          className="w-full mt-4"
+        >
+          view full recipe
+        </Button>
       </div>
     </motion.div>
   );

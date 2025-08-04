@@ -40,6 +40,10 @@ export interface Comment {
   };
 }
 
+/**
+ * RecipeDetails Component
+ * Renders full information of a selected recipe.
+ */
 export default function RecipeDetails() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -55,6 +59,10 @@ export default function RecipeDetails() {
   const toast = useToast();
   const hasShownToast = useRef(false);
   const location = useLocation();
+
+  /**
+   * Shows toast message only once when redirected from another page.
+   */
   useEffect(() => {
     if (location.state?.toast && !hasShownToast.current) {
       toast.addToast(location.state.toast);
@@ -67,13 +75,27 @@ export default function RecipeDetails() {
       try {
         const res = await API.get(`/recipes/${id}`);
         setRecipe(res.data.recipe);
-      } catch (err) {
-        console.error("Error fetching recipe:", err);
+      } catch (err: unknown) {
+        if (typeof err === "object" && err !== null && "response" in err) {
+          const status = (err as { response: { status: number } }).response
+            .status;
+          if (status === 404) {
+            setMyRating(null);
+            setRatingId(null);
+          } else {
+            console.error("Failed to fetch my rating", err);
+          }
+        } else {
+          console.error("Unexpected error", err);
+        }
       }
     }
     fetchRecipe();
   }, [id]);
 
+  /**
+   * Fetch user of this recipe
+   */
   useEffect(() => {
     async function fetchUser() {
       if (recipe?.userId) {
@@ -88,6 +110,9 @@ export default function RecipeDetails() {
     fetchUser();
   }, [recipe]);
 
+  /**
+   * Fetch comments for this recipe, and determine if current user has already commented.
+   */
   useEffect(() => {
     async function fetchComments() {
       try {
@@ -99,13 +124,13 @@ export default function RecipeDetails() {
               ...comment,
               user: userRes.data.user,
             };
-          }),
+          })
         );
         setComments(commentData);
 
         if (currentUser) {
           const alreadyCommented = commentData.some(
-            (c) => c.userId === currentUser._id && c.parentCommentId === null,
+            (c) => c.userId === currentUser._id && c.parentCommentId === null
           );
           setHasCommented(alreadyCommented);
         }
@@ -123,8 +148,13 @@ export default function RecipeDetails() {
         const res = await API.get(`/ratings/${id}`);
         setMyRating(res.data.myRating.rating);
         setRatingId(res.data.myRating._id);
-      } catch (_err) {
-        console.error("Failed to fetch my rating");
+      } catch (err: unknown) {
+        if (typeof err === "object") {
+          setMyRating(null);
+          setRatingId(null);
+        } else {
+          console.error("Failed to fetch my rating", err);
+        }
       }
     }
     if (currentUser) {
@@ -132,6 +162,17 @@ export default function RecipeDetails() {
     }
   }, [currentUser, id]);
 
+  /**
+   * Handles the user's rating action for a recipe.
+   *
+   * - If a user is authenticated and has not rated the recipe, it creates a new rating.
+   * - If the user is in edit mode and has an existing rating, it updates the rating.
+   * - Prevents actions if no user is logged in, if the recipe ID is missing,
+   *   or if the user already rated and is not in edit mode.
+   *
+   * @param {number} star - The rating value selected by the user (typically 1–5).
+   * @returns {Promise<void>} - A promise that resolves after rating is handled.
+   */
   const handleRatingClick = async (star: number) => {
     if (!currentUser || !id || (myRating && !editMode)) return;
     try {
@@ -161,6 +202,9 @@ export default function RecipeDetails() {
   if (!recipe)
     return <div className="text-center p-10 text-xl">Loading...</div>;
 
+  /**
+   * formats the date into user friendly format
+   */
   const formattedDate = new Date(recipe.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -178,7 +222,7 @@ export default function RecipeDetails() {
                 : foodImage
             }
             alt={recipe.title}
-            className="rounded-xl w-full h-[300px] sm:h-[400px] object-cover shadow-lg"
+            className="rounded-xl w-full h-[300px] sm:h-[400px] object-contain shadow-lg"
           />
           <h1 className="mt-6 text-3xl font-bold text-[var(--primary)]">
             {recipe.title}
@@ -389,13 +433,13 @@ export default function RecipeDetails() {
                         const commentData = await Promise.all(
                           res.data.comments.map(async (comment: Comment) => {
                             const userRes = await API.get(
-                              `/users/${comment.userId}`,
+                              `/users/${comment.userId}`
                             );
                             return {
                               ...comment,
                               user: userRes.data.user,
                             };
-                          }),
+                          })
                         );
                         setComments(commentData);
                       } catch (err) {
