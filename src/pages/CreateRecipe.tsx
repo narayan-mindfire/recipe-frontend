@@ -115,8 +115,11 @@ export default function CreateRecipeForm() {
         </h2>
 
         <div>
-          <label className="block text-sm font-medium">Title</label>
+          <label htmlFor="title" className="block text-sm font-medium">
+            Title
+          </label>
           <input
+            id="title"
             type="text"
             {...register("title")}
             className="w-full p-2 border rounded mt-1"

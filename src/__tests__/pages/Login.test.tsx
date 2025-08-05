@@ -76,7 +76,6 @@ test("submits login form and redirects on success", async () => {
 
     expect(mockLogin).toHaveBeenCalledWith(mockUser, "fake-token");
 
-    // ✅ updated assertion for mocked navigation
     expect(mockNavigate).toHaveBeenCalledWith("/dashboard?page=1", {
       state: {
         toast: {
