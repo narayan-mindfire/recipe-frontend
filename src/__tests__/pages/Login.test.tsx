@@ -22,23 +22,27 @@ vi.mock("../../service/axiosInterceptor", () => ({
   },
 }));
 import API from "../../service/axiosInterceptor";
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
 
 const renderWithContext = (login = vi.fn()) => {
   return render(
-    <AuthContext.Provider
-      value={{
-        currentUser: null,
-        accessToken: null,
-        login,
-        logout: vi.fn(),
-      }}
-    >
-      <ToastProvider>
-        <BrowserRouter>
-          <Login />
-        </BrowserRouter>
-      </ToastProvider>
-    </AuthContext.Provider>,
+    <HelmetProvider>
+      <AuthContext.Provider
+        value={{
+          currentUser: null,
+          accessToken: null,
+          login,
+          logout: vi.fn(),
+        }}
+      >
+        <ToastProvider>
+          <BrowserRouter>
+            <Login />
+          </BrowserRouter>
+        </ToastProvider>
+      </AuthContext.Provider>
+      ,
+    </HelmetProvider>,
   );
 };
 
