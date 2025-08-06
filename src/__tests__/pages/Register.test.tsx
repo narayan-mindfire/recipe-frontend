@@ -4,6 +4,7 @@ import Register from "../../pages/Register";
 import { AuthContext } from "../../context/authContext";
 import { BrowserRouter } from "react-router-dom";
 import API from "../../service/axiosInterceptor";
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
 
 vi.mock("../../service/axiosInterceptor");
 
@@ -22,13 +23,15 @@ const renderWithAuth = () => {
   const login = vi.fn();
 
   render(
-    <AuthContext.Provider
-      value={{ currentUser: null, accessToken: "", login, logout: vi.fn() }}
-    >
-      <BrowserRouter>
-        <Register />
-      </BrowserRouter>
-    </AuthContext.Provider>,
+    <HelmetProvider>
+      <AuthContext.Provider
+        value={{ currentUser: null, accessToken: "", login, logout: vi.fn() }}
+      >
+        <BrowserRouter>
+          <Register />
+        </BrowserRouter>
+      </AuthContext.Provider>
+    </HelmetProvider>,
   );
 
   return { login };
@@ -66,18 +69,20 @@ describe("Register component", () => {
     });
 
     render(
-      <AuthContext.Provider
-        value={{
-          currentUser: null,
-          accessToken: "",
-          login: mockLogin,
-          logout: vi.fn(),
-        }}
-      >
-        <BrowserRouter>
-          <Register />
-        </BrowserRouter>
-      </AuthContext.Provider>,
+      <HelmetProvider>
+        <AuthContext.Provider
+          value={{
+            currentUser: null,
+            accessToken: "",
+            login: mockLogin,
+            logout: vi.fn(),
+          }}
+        >
+          <BrowserRouter>
+            <Register />
+          </BrowserRouter>
+        </AuthContext.Provider>
+      </HelmetProvider>,
     );
 
     fireEvent.input(screen.getByPlaceholderText("First Name"), {

@@ -4,6 +4,7 @@ import Dashboard from "../../pages/Dashboard";
 import { BrowserRouter } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import { ToastProvider } from "../../components/ui";
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
 vi.mock("../../service/axiosInterceptor", () => ({
   default: {
     get: vi.fn(() =>
@@ -34,20 +35,23 @@ vi.mock("../../service/axiosInterceptor", () => ({
 
 const renderWithProviders = (currentUser = null) => {
   return render(
-    <AuthContext.Provider
-      value={{
-        currentUser,
-        accessToken: "token",
-        login: vi.fn(),
-        logout: vi.fn(),
-      }}
-    >
-      <ToastProvider>
-        <BrowserRouter>
-          <Dashboard />
-        </BrowserRouter>
-      </ToastProvider>
-    </AuthContext.Provider>,
+    <HelmetProvider>
+      <AuthContext.Provider
+        value={{
+          currentUser,
+          accessToken: "token",
+          login: vi.fn(),
+          logout: vi.fn(),
+        }}
+      >
+        <ToastProvider>
+          <BrowserRouter>
+            <Dashboard />
+          </BrowserRouter>
+        </ToastProvider>
+      </AuthContext.Provider>
+      ,
+    </HelmetProvider>,
   );
 };
 
@@ -58,7 +62,9 @@ describe("Dashboard", () => {
 
   it("renders 'Loading...' initially", async () => {
     renderWithProviders();
-    expect(screen.getByText(/loading.../i)).toBeInTheDocument();
+    const loadingElements = screen.getAllByText(/loading.../i);
+    expect(loadingElements.length).toBeGreaterThan(0);
+
     await waitFor(() => screen.getByText(/test recipe/i));
   });
 

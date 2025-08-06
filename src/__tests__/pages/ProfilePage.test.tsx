@@ -4,6 +4,7 @@ import API from "../../service/axiosInterceptor";
 import { vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { ToastProvider } from "../../components/ui";
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
 vi.mock("../../service/axiosInterceptor", async () => {
   const actual = await vi.importActual("../../service/axiosInterceptor");
   return {
@@ -55,11 +56,13 @@ describe("Profile", () => {
       .mockResolvedValueOnce({ data: { myRecipies: mockRecipes } }); // /recipes/me
 
     render(
-      <ToastProvider>
-        <MemoryRouter>
-          <Profile />
-        </MemoryRouter>
-      </ToastProvider>,
+      <HelmetProvider>
+        <ToastProvider>
+          <MemoryRouter>
+            <Profile />
+          </MemoryRouter>
+        </ToastProvider>
+      </HelmetProvider>,
     );
 
     // Initially shows loading state
@@ -77,11 +80,13 @@ describe("Profile", () => {
       .mockResolvedValueOnce({ data: mockUser })
       .mockResolvedValueOnce({ data: { myRecipies: [] } });
     render(
-      <ToastProvider>
-        <MemoryRouter>
-          <Profile />
-        </MemoryRouter>
-      </ToastProvider>,
+      <HelmetProvider>
+        <ToastProvider>
+          <MemoryRouter>
+            <Profile />
+          </MemoryRouter>
+        </ToastProvider>
+      </HelmetProvider>,
     );
 
     await waitFor(() => {

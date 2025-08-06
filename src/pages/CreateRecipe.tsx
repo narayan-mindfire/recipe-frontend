@@ -7,6 +7,7 @@ import Button from "../components/utils/Button";
 import { useNavigate } from "react-router-dom";
 import { recipeFormSchema } from "../zod/schemas";
 import { useToast } from "../components/ui/toast/use-toast";
+import { Helmet } from "@dr.pogodin/react-helmet";
 
 type RecipeFormData = z.infer<typeof recipeFormSchema>;
 
@@ -104,163 +105,183 @@ export default function CreateRecipeForm() {
   };
 
   return (
-    <div className="flex min-h-[90vh] items-center justify-center bg-[var(--background2)] text-[var(--text)] transition-colors duration-300">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        encType="multipart/form-data"
-        className="max-w-3xl mx-auto bg-[var(--background)] p-8 rounded-xl shadow-md space-y-6 text-[var(--text)]"
-      >
-        <h2 className="text-2xl font-bold text-[var(--primary)] text-center">
-          Create a New Recipe
-        </h2>
+    <>
+      <Helmet>
+        <title>Create Recipe | Recipe Sharing Platform</title>
+        <meta
+          name="description"
+          content="Create your delicious recipe with step-by-step instructions and images on Recipe Sharing Platform."
+        />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content="Create a new recipe" />
+        <meta
+          property="og:description"
+          content="Craft and share your culinary creations."
+        />
+        <meta
+          property="og:url"
+          content={`${window.location.origin}/createRecipe`}
+        />
+        <meta property="og:site_name" content="Recipe Sharing Platform" />
+      </Helmet>
+      <div className="flex min-h-[90vh] items-center justify-center bg-[var(--background2)] text-[var(--text)] transition-colors duration-300">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          encType="multipart/form-data"
+          className="max-w-3xl mx-auto bg-[var(--background)] p-8 rounded-xl shadow-md space-y-6 text-[var(--text)]"
+        >
+          <h2 className="text-2xl font-bold text-[var(--primary)] text-center">
+            Create a New Recipe
+          </h2>
 
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium">
-            Title
-          </label>
-          <input
-            id="title"
-            type="text"
-            {...register("title")}
-            className="w-full p-2 border rounded mt-1"
-          />
-          {errors.title && (
-            <p className="text-[var(--primary)] text-sm mt-1">
-              {errors.title.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Description</label>
-          <textarea
-            {...register("description")}
-            rows={3}
-            className="w-full p-2 border rounded mt-1"
-          />
-          {errors.description && (
-            <p className="text-[var(--primary)] text-sm mt-1">
-              {errors.description.message}
-            </p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium">
-              Preparation Time (minutes)
+            <label htmlFor="title" className="block text-sm font-medium">
+              Title
             </label>
             <input
-              type="number"
-              {...register("preparationTime", { valueAsNumber: true })}
+              id="title"
+              type="text"
+              {...register("title")}
               className="w-full p-2 border rounded mt-1"
             />
-
-            {errors.preparationTime && (
+            {errors.title && (
               <p className="text-[var(--primary)] text-sm mt-1">
-                {errors.preparationTime?.message as React.ReactNode}
+                {errors.title.message}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Difficulty</label>
-            <select
-              {...register("difficulty")}
+            <label className="block text-sm font-medium">Description</label>
+            <textarea
+              {...register("description")}
+              rows={3}
               className="w-full p-2 border rounded mt-1"
-            >
-              <option
-                className="bg-[var(--background)] text-[var(--text)]]"
-                value="easy"
-              >
-                Easy
-              </option>
-              <option
-                className="bg-[var(--background)] text-[var(--text)]]"
-                value="medium"
-              >
-                Medium
-              </option>
-              <option
-                className="bg-[var(--background)] text-[var(--text)]]"
-                value="hard"
-              >
-                Hard
-              </option>
-            </select>
-            {errors.difficulty && (
+            />
+            {errors.description && (
               <p className="text-[var(--primary)] text-sm mt-1">
-                {errors.difficulty.message}
+                {errors.description.message}
               </p>
             )}
           </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium">
-            Ingredients (comma separated)
-          </label>
-          <input
-            type="text"
-            {...register("ingredientsRaw")}
-            className="w-full p-2 border rounded mt-1"
-          />
-          {errors.ingredientsRaw && (
-            <p className="text-[var(--primary)] text-sm mt-1">
-              {errors.ingredientsRaw.message}
-            </p>
-          )}
-        </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium">
+                Preparation Time (minutes)
+              </label>
+              <input
+                type="number"
+                {...register("preparationTime", { valueAsNumber: true })}
+                className="w-full p-2 border rounded mt-1"
+              />
 
-        <div>
-          <label className="block text-sm font-medium">Steps</label>
-          <div className="space-y-2">
-            {fields.map((field, index) => (
-              <div key={field.id} className="flex items-center gap-2">
-                <textarea
-                  {...register(`steps.${index}`)}
-                  className="w-full p-2 border rounded"
-                />
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  className="text-[var(--primary)] hover:underline"
+              {errors.preparationTime && (
+                <p className="text-[var(--primary)] text-sm mt-1">
+                  {errors.preparationTime?.message as React.ReactNode}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Difficulty</label>
+              <select
+                {...register("difficulty")}
+                className="w-full p-2 border rounded mt-1"
+              >
+                <option
+                  className="bg-[var(--background)] text-[var(--text)]]"
+                  value="easy"
                 >
-                  Remove
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={() => append("")}
-              className="text-[var(--accent)] hover:underline text-sm"
-            >
-              + Add Step
-            </button>
+                  Easy
+                </option>
+                <option
+                  className="bg-[var(--background)] text-[var(--text)]]"
+                  value="medium"
+                >
+                  Medium
+                </option>
+                <option
+                  className="bg-[var(--background)] text-[var(--text)]]"
+                  value="hard"
+                >
+                  Hard
+                </option>
+              </select>
+              {errors.difficulty && (
+                <p className="text-[var(--primary)] text-sm mt-1">
+                  {errors.difficulty.message}
+                </p>
+              )}
+            </div>
           </div>
-          {errors.steps && (
-            <p className="text-[var(--primary)] text-sm mt-1">
-              {errors.steps.message as React.ReactNode}
-            </p>
-          )}
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium">Recipe Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            {...register("recipeImage")}
-            className="w-full p-2 border rounded mt-1"
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium">
+              Ingredients (comma separated)
+            </label>
+            <input
+              type="text"
+              {...register("ingredientsRaw")}
+              className="w-full p-2 border rounded mt-1"
+            />
+            {errors.ingredientsRaw && (
+              <p className="text-[var(--primary)] text-sm mt-1">
+                {errors.ingredientsRaw.message}
+              </p>
+            )}
+          </div>
 
-        <div className="pt-4">
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Submitting..." : "Create Recipe"}
-          </Button>
-        </div>
-      </form>
-    </div>
+          <div>
+            <label className="block text-sm font-medium">Steps</label>
+            <div className="space-y-2">
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex items-center gap-2">
+                  <textarea
+                    {...register(`steps.${index}`)}
+                    className="w-full p-2 border rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="text-[var(--primary)] hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => append("")}
+                className="text-[var(--accent)] hover:underline text-sm"
+              >
+                + Add Step
+              </button>
+            </div>
+            {errors.steps && (
+              <p className="text-[var(--primary)] text-sm mt-1">
+                {errors.steps.message as React.ReactNode}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium">Recipe Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              {...register("recipeImage")}
+              className="w-full p-2 border rounded mt-1"
+            />
+          </div>
+
+          <div className="pt-4">
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? "Submitting..." : "Create Recipe"}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </>
   );
 }

@@ -5,15 +5,18 @@ import App from "./App.tsx";
 import { ThemeProvider } from "./context/ThemeProvider.tsx";
 import { AuthProvider } from "./context/AuthProvider.tsx";
 import { ToastProvider } from "./components/ui/index.ts";
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AuthProvider>
-      <ThemeProvider>
-        <ToastProvider>
-          <App />
-        </ToastProvider>
-      </ThemeProvider>
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </HelmetProvider>
   </StrictMode>,
 );

@@ -6,7 +6,10 @@ import axios from "axios";
  * - withCredentials ensures cookies (e.g. auth tokens) are sent with requests
  */
 const API = axios.create({
-  baseURL: `https://recipe-backend-p66d.onrender.com/api/v1`,
+  baseURL:
+    import.meta.env.VITE_ENV === "development"
+      ? `http://localhost:5000/api/v1`
+      : `${import.meta.env.VITE_SERVER_URL}/api/v1`,
   withCredentials: true,
 });
 
