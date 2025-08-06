@@ -7,7 +7,6 @@ const Navbar = () => {
   const { darkMode, toggleTheme } = useTheme();
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
-  const serverUrl = import.meta.env.VITE_SERVER_URL;
   const handleLogout = () => {
     logout();
     navigate("/", {
@@ -56,7 +55,7 @@ const Navbar = () => {
               <div className="text-sm font-medium flex items-center gap-2">
                 {currentUser.profileImage ? (
                   <img
-                    src={`${serverUrl}/uploads/${currentUser.profileImage}`}
+                    src={currentUser.profileImage}
                     alt="Profile"
                     className="w-8 h-8 rounded-full object-cover"
                   />

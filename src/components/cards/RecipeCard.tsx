@@ -21,7 +21,6 @@ interface UserData {
   lname: string;
   profileImage: string;
 }
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 /**
  * Displays a styled recipe card with title, author, image, rating, and description.
@@ -55,11 +54,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
       transition={{ duration: 0.4 }}
     >
       <img
-        src={
-          recipe.recipeImage
-            ? `${serverUrl}/uploads/${recipe.recipeImage}`
-            : foodImage
-        }
+        src={recipe.recipeImage ? recipe.recipeImage : foodImage}
         alt={recipe.title}
         className="w-full h-[300px] object-cover bg-[var(--background2)]"
       />
@@ -68,7 +63,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
         <div className="flex items-center gap-3 mb-2">
           {user?.profileImage ? (
             <img
-              src={`${serverUrl}/uploads/${user.profileImage}`}
+              src={user.profileImage}
               alt="Profile"
               className="w-8 h-8 rounded-full object-cover"
             />

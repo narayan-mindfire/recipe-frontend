@@ -7,7 +7,7 @@ import type { Recipe } from "../pages/Dashboard";
 import { useToast } from "../components/ui/toast/use-toast";
 import { Helmet } from "@dr.pogodin/react-helmet";
 const EditProfileModal = lazy(
-  () => import("../components/utils/EditProfileModal"),
+  () => import("../components/utils/EditProfileModal")
 );
 const ConfirmModal = lazy(() => import("../components/utils/ConfirmModal"));
 const RecipeCard = lazy(() => import("../components/cards/RecipeCard"));
@@ -21,7 +21,6 @@ interface User {
   createdAt: string;
   updatedAt: string;
 }
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 /**
  * ProfilePage component
@@ -49,7 +48,7 @@ const ProfilePage = () => {
   }, [navigate]);
 
   /**
-   * Handles account deletion confirmation
+   * Handles account deletion confirmationf
    */
   const handleDeleteConfirmed = async () => {
     try {
@@ -103,10 +102,7 @@ const ProfilePage = () => {
           property="og:description"
           content={`Check out ${user.fname}'s bio and recipes.`}
         />
-        <meta
-          property="og:image"
-          content={`${serverUrl}/uploads/${user.profileImage}`}
-        />
+        <meta property="og:image" content={user.profileImage} />
         <meta property="og:url" content={window.location.href} />
         <meta property="og:site_name" content="Recipe Sharing Platform" />
       </Helmet>
@@ -147,11 +143,7 @@ const ProfilePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3">
             <div className="bg-[var(--accent)] flex flex-col items-center justify-center p-10 text-white">
               <motion.img
-                src={
-                  user.profileImage
-                    ? `${serverUrl}/uploads/${user.profileImage}`
-                    : undefined
-                }
+                src={user.profileImage}
                 alt="Profile"
                 className="w-36 h-36 rounded-full object-cover border-4 border-white shadow-md"
                 whileHover={{ scale: 1.1 }}
@@ -193,7 +185,7 @@ const ProfilePage = () => {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
-                      },
+                      }
                     )}
                   </p>
                 </div>

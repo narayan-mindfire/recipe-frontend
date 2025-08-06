@@ -16,11 +16,11 @@ import { Helmet } from "@dr.pogodin/react-helmet";
 const RecipeStats = lazy(() => import("../components/utils/RecipeStats"));
 const RecipeSteps = lazy(() => import("../components/utils/RecipeStep"));
 const IngredientsList = lazy(
-  () => import("../components/utils/IngredientList"),
+  () => import("../components/utils/IngredientList")
 );
 const CommentSection = lazy(() => import("../components/utils/CommentSection"));
 const EditRecipeModal = lazy(
-  () => import("../components/utils/EditRecipeModal"),
+  () => import("../components/utils/EditRecipeModal")
 );
 const ConfirmModal = lazy(() => import("../components/utils/ConfirmModal"));
 
@@ -173,7 +173,7 @@ export default function RecipeDetails() {
         console.error("Rating failed", err);
       }
     },
-    [currentUser, id, myRating, editMode, ratingId, toast],
+    [currentUser, id, myRating, editMode, ratingId, toast]
   );
 
   const handleDeleteConfirmed = async () => {
@@ -255,11 +255,7 @@ export default function RecipeDetails() {
         <div className="max-w-5xl mx-auto gap-8">
           <div>
             <img
-              src={
-                recipe.recipeImage
-                  ? `${serverUrl}/uploads/${recipe.recipeImage}`
-                  : foodImage
-              }
+              src={recipe.recipeImage ? recipe.recipeImage : foodImage}
               alt={recipe.title}
               loading="lazy"
               className="rounded-xl w-full h-[300px] sm:h-[400px] object-contain mt-10 md:mt-0"
@@ -275,7 +271,7 @@ export default function RecipeDetails() {
             <div className="mt-4 flex items-center gap-3 mb-3 ">
               {user?.profileImage ? (
                 <img
-                  src={`${serverUrl}/uploads/${user.profileImage}`}
+                  src={user.profileImage}
                   alt="Profile"
                   className="w-8 h-8 rounded-full object-cover"
                 />
