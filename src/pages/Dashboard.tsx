@@ -1,13 +1,17 @@
-import { useEffect, useRef, useState, memo } from "react";
+import { useEffect, useRef, useState, memo, useMemo } from "react";
+import { lazy, Suspense } from "react";
 import API from "../service/axiosInterceptor";
-import RecipeCard from "../components/cards/RecipeCard";
 import { useDebounce } from "../hooks/useDebounce";
-import SearchFilters from "../components/dashboard/SearchFilter";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../components/utils/Button";
 import { useToast } from "../components/ui/toast/use-toast";
 import { useLocation } from "react-router-dom";
+import { Helmet } from "@dr.pogodin/react-helmet";
+const RecipeCard = lazy(() => import("../components/cards/RecipeCard"));
+const SearchFilters = lazy(
+  () => import("../components/dashboard/SearchFilter"),
+);
 
 export interface Recipe {
   _id: string;
@@ -98,68 +102,87 @@ function Dashboard() {
 
     fetchRecipes();
   }, [debouncedFilters, page]);
+
+  const renderedRecipes = useMemo(() => {
+    return recipes.map((recipe) => (
+      <RecipeCard key={recipe._id} recipe={recipe} />
+    ));
+  }, [recipes]);
+
   return (
-    <div className="min-h-[85vh] bg-[var(--background2)] py-12 px-4">
-      <div className="mx-auto">
-        <div className="relative mb-8 flex items-center justify-between">
-          <h2 className="absolute left-1/2 -translate-x-1/2 text-2xl font-bold text-[var(--primary)]">
-            Recipes
-          </h2>
+    <>
+      <Helmet>
+        <title>Browse Recipes | Recipe Sharing Platform</title>
+        <meta
+          name="description"
+          content="Discover and filter delicious recipes shared by our community."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Recipe Dashboard" />
+        <meta property="og:url" content={`${window.location.href}`} />
+      </Helmet>
+      <div className="min-h-[85vh] bg-[var(--background2)] py-12 px-4">
+        <div className="mx-auto">
+          <div className="relative mb-8 flex items-center justify-between">
+            <h2 className="absolute left-1/2 -translate-x-1/2 text-2xl font-bold text-[var(--primary)]">
+              Recipes
+            </h2>
 
-          {currentUser && (
-            <Button
-              onClick={() => navigate("/createRecipe")}
-              className="ml-auto px-4 py-2 bg-[var(--accent)] text-white rounded hover:bg-[var(--primary)] transition"
-            >
-              + Create Recipe
-            </Button>
-          )}
-        </div>
+            {currentUser && (
+              <Button
+                onClick={() => navigate("/createRecipe")}
+                className="ml-auto px-4 py-2 bg-[var(--accent)] text-white rounded hover:bg-[var(--primary)] transition"
+              >
+                + Create Recipe
+              </Button>
+            )}
+          </div>
 
-        <div className="mx-auto max-w-7xl">
-          <SearchFilters
-            onFilterChange={(newFilters, shouldResetPage) => {
-              setFilters(newFilters);
-              if (shouldResetPage) setPage(1);
-            }}
-          />
+          <div className="mx-auto max-w-7xl">
+            <Suspense fallback={<div>loading...</div>}>
+              <SearchFilters
+                onFilterChange={(newFilters, shouldResetPage) => {
+                  setFilters(newFilters);
+                  if (shouldResetPage) setPage(1);
+                }}
+              />
+            </Suspense>
 
-          {loading ? (
-            <div className="text-center text-lg text-[var(--muted)]">
-              Loading...
-            </div>
-          ) : recipes.length === 0 ? (
-            <div className="text-center text-[var(--muted)]">
-              No results found. Try adjusting your search filters.
-            </div>
-          ) : (
-            <>
-              <div className="flex flex-wrap justify-center gap-8">
-                {recipes.map((recipe) => (
-                  <RecipeCard key={recipe._id} recipe={recipe} />
-                ))}
+            {loading ? (
+              <div className="text-center text-lg text-[var(--muted)]">
+                Loading...
               </div>
-              <div className="flex justify-center mt-6 gap-4">
-                <Button
-                  className="px-4 py-2 bg-[var(--accent)] text-white rounded disabled:opacity-50"
-                  disabled={page === 1}
-                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                >
-                  Previous
-                </Button>
-                <Button
-                  className="px-4 py-2 bg-[var(--accent)] text-white rounded disabled:opacity-50"
-                  disabled={!hasMore}
-                  onClick={() => setPage((prev) => prev + 1)}
-                >
-                  Next
-                </Button>
+            ) : recipes.length === 0 ? (
+              <div className="text-center text-[var(--muted)]">
+                No results found. Try adjusting your search filters.
               </div>
-            </>
-          )}
+            ) : (
+              <>
+                <div className="flex flex-wrap justify-center gap-8">
+                  {renderedRecipes}
+                </div>
+                <div className="flex justify-center mt-6 gap-4">
+                  <Button
+                    className="px-4 py-2 bg-[var(--accent)] text-white rounded disabled:opacity-50"
+                    disabled={page === 1}
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    className="px-4 py-2 bg-[var(--accent)] text-white rounded disabled:opacity-50"
+                    disabled={!hasMore}
+                    onClick={() => setPage((prev) => prev + 1)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

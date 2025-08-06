@@ -27,10 +27,6 @@ export default function SearchFilters({ onFilterChange }: Props) {
   ).current;
 
   useEffect(() => {
-    console.log("filter render");
-  }, []);
-
-  useEffect(() => {
     const filters = { ingredients, minRating, maxTime, sortBy, order };
     debouncedFilterChange(filters);
 
