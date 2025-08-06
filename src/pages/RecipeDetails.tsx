@@ -16,11 +16,11 @@ import { Helmet } from "@dr.pogodin/react-helmet";
 const RecipeStats = lazy(() => import("../components/utils/RecipeStats"));
 const RecipeSteps = lazy(() => import("../components/utils/RecipeStep"));
 const IngredientsList = lazy(
-  () => import("../components/utils/IngredientList")
+  () => import("../components/utils/IngredientList"),
 );
 const CommentSection = lazy(() => import("../components/utils/CommentSection"));
 const EditRecipeModal = lazy(
-  () => import("../components/utils/EditRecipeModal")
+  () => import("../components/utils/EditRecipeModal"),
 );
 const ConfirmModal = lazy(() => import("../components/utils/ConfirmModal"));
 
@@ -173,7 +173,7 @@ export default function RecipeDetails() {
         console.error("Rating failed", err);
       }
     },
-    [currentUser, id, myRating, editMode, ratingId, toast]
+    [currentUser, id, myRating, editMode, ratingId, toast],
   );
 
   const handleDeleteConfirmed = async () => {

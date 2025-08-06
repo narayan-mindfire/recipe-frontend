@@ -7,7 +7,7 @@ import type { Recipe } from "../pages/Dashboard";
 import { useToast } from "../components/ui/toast/use-toast";
 import { Helmet } from "@dr.pogodin/react-helmet";
 const EditProfileModal = lazy(
-  () => import("../components/utils/EditProfileModal")
+  () => import("../components/utils/EditProfileModal"),
 );
 const ConfirmModal = lazy(() => import("../components/utils/ConfirmModal"));
 const RecipeCard = lazy(() => import("../components/cards/RecipeCard"));
@@ -185,7 +185,7 @@ const ProfilePage = () => {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
-                      }
+                      },
                     )}
                   </p>
                 </div>
